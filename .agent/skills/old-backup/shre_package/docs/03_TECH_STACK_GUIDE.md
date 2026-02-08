@@ -1,0 +1,1 @@
+Frontend: React.js with TypeScript. Backend: Node.js with Express.js. Database: PostgreSQL. Authentication: JWT with Passport.js. API: GraphQL. Mobile: React Native. AI: TensorFlow.js. Deployment: Docker, Kubernetes on AWS.

@@ -1,0 +1,25 @@
+export interface AdkEvent {
+  author: string;
+  content?: {
+    parts: { text?: string; functionCall?: any; functionResponse?: any }[];
+  };
+  actions?: {
+    stateDelta?: any;
+  };
+}
+
+export const createAdkSession = async (baseUrl: string, appName: string, userId: string, sessionId: string) => {
+  const response = await fetch(`${baseUrl}/api/apps/${appName}/users/${userId}/sessions/${sessionId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+  return response.json();
+};
+
+export const parseAdkSse = (data: string): AdkEvent | null => {
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return null;
+  }
+};

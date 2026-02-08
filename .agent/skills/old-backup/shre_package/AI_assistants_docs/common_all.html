@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">AI Assistant Prompt Guide</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Mermaid for Flowcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .phase-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .phase-badge.p0 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .phase-badge.p1 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .phase-badge.p2 {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .prompt-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .prompt-card h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .step-number {
+            background: var(--primary-gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-gradient);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+        }
+        
+        .resource-link {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .resource-link:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .progress-tracker {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .btn-gradient {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .editable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .editable:hover::after {
+            content: '✎';
+            position: absolute;
+            right: -20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Configuration Script - CUSTOMIZE THIS SECTION -->
+    <script id="config-script">
+        const CONFIG = {
+            // Tool/Editor Information
+            tool: {
+                name: "Google Antigravity",
+                tagline: "AI-Powered IDE with Autonomous Agents",
+                icon: "fas fa-robot",
+                description: "Master autonomous development with Google Antigravity and AI-powered coding assistants. Build complex projects with minimal manual configuration.",
+                
+                // Official Resources
+                resources: [
+                    {
+                        title: "Official Website",
+                        url: "https://antigravity.google",
+                        icon: "fas fa-home",
+                        iconColor: "text-primary",
+                        description: "antigravity.google"
+                    },
+                    {
+                        title: "Documentation",
+                        url: "https://antigravity.google/docs",
+                        icon: "fas fa-book",
+                        iconColor: "text-success",
+                        description: "In-depth guides & API references"
+                    },
+                    {
+                        title: "Download Page",
+                        url: "https://antigravity.google/download",
+                        icon: "fas fa-download",
+                        iconColor: "text-warning",
+                        description: "macOS, Windows, Linux installers"
+                    },
+                    {
+                        title: "YouTube Channel",
+                        url: "https://www.youtube.com/@googleantigravity",
+                        icon: "fab fa-youtube",
+                        iconColor: "text-danger",
+                        description: "Video tutorials & demos"
+                    }
+                ],
+
+                // Features
+                features: [
+                    { text: "Built on VS Code foundation", icon: "fas fa-check-circle" },
+                    { text: "Autonomous agent planning", icon: "fas fa-check-circle" },
+                    { text: "Multi-agent collaboration", icon: "fas fa-check-circle" },
+                    { text: "Built-in browser for testing", icon: "fas fa-check-circle" },
+                    { text: "Cross-surface synchronization", icon: "fas fa-check-circle" }
+                ],
+
+                // Development Modes
+                modes: [
+                    {
+                        title: "Secure Mode",
+                        description: "Restricts agent access to external resources for maximum security."
+                    },
+                    {
+                        title: "Review-Driven",
+                        description: "Requires frequent approvals for agent actions."
+                    },
+                    {
+                        title: "Agent-Driven",
+                        description: "Allows agents full autonomy for rapid development."
+                    },
+                    {
+                        title: "Custom Configuration",
+                        description: "Balance autonomy and security with custom policies."
+                    }
+                ]
+            },
+
+            // Project Documentation Files
+            documentation: [
+                { file: "01_PRD.md", description: "product requirements (goals, user stories, features)" },
+                { file: "02_MASTER_TECH_SPECS.md", description: "detailed technical specifications and architecture" },
+                { file: "03_TECH_STACK_GUIDE.md", description: "approved languages, frameworks and libraries" },
+                { file: "04_DATABASE_SCHEMAS.md", description: "entity-relationship diagrams and schema definitions" },
+                { file: "05_AUTOMATED_TEST_SUITE.md", description: "specifications for automated tests" },
+                { file: "06_MANUAL_TEST_GUIDELINES.md", description: "instructions for manual browser testing" },
+                { file: "P0_Test:_Core_Infrastructure_&_Secure_Authentication.md", description: "P0 priority test plan" },
+                { file: "P1_Test:_Persistence,_RBAC_&_Transactional_Integrity.md", description: "P1 priority test plan" },
+                { file: "P2_Test:_Scale & Performance_Optimization,_resilience_Resilience_&_Scale.md", description: "P2 priority test plan" },
+                { file: "README.md", description: "general overview of the project" }
+            ],
+
+            // Getting Started Steps
+            gettingStarted: [
+                {
+                    number: 1,
+                    title: "Unzip Project Archive",
+                    description: "Extract the downloaded project to access the <code>/docs</code> folder and source code directories."
+                },
+                {
+                    number: 2,
+                    title: "Configure Runtime (Optional)",
+                    description: "Install Node.js, Python, or required runtimes. The AI assistant can handle this automatically in most cases."
+                },
+                {
+                    number: 3,
+                    title: "Open in Your IDE",
+                    description: "Launch your AI-powered editor with the assistant enabled."
+                }
+            ],
+
+            // Phase 1: Document Review Prompts
+            phase1: {
+                name: "Document Review",
+                icon: "fas fa-book-open",
+                prompts: [
+                    {
+                        id: "A",
+                        title: "Summarize Documentation",
+                        icon: "fas fa-terminal",
+                        description: "Ask the AI to read and summarize all documentation files:",
+                        code: `Please read and summarise all documentation in the \`docs/\` folder:
+- 01_PRD.md – product requirements
+- 02_MASTER_TECH_SPECS.md – technical specifications
+- 03_TECH_STACK_GUIDE.md – approved tech stack
+- 04_DATABASE_SCHEMAS.md – database designs
+- 05_AUTOMATED_TEST_SUITE.md – test specifications
+- 06_MANUAL_TEST_GUIDELINES.md – manual testing
+- P0, P1, P2 test plans
+- README.md – project overview
+
+Provide a concise summary of each document.`
+                    },
+                    {
+                        id: "B",
+                        title: "Setup & Run Project",
+                        icon: "fas fa-terminal",
+                        description: "Let the AI automatically configure and start the project:",
+                        code: `After summarising the documentation, set up, configure and run the project automatically:
+- Install dependencies (npm/yarn/pip)
+- Configure environment variables
+- Run database migrations
+- Start the development server
+
+Summarise the steps taken and confirm if the project is running.`
+                    },
+                    {
+                        id: "C",
+                        title: "Validate Folder Structure",
+                        icon: "fas fa-terminal",
+                        description: "Verify project organization against documentation:",
+                        code: `Using the tree listing in \`structure.json\`, explain the purpose of each major 
+directory and file. Identify any missing directories or files needed to satisfy 
+all requirements and tests.`
+                    }
+                ]
+            },
+
+            // P0 Phase
+            p0: {
+                name: "Core Infrastructure & Secure Authentication",
+                badge: "P0 PHASE",
+                icon: "fas fa-shield-alt",
+                color: "p0",
+                prompts: [
+                    {
+                        id: "D",
+                        title: "Plan P0 Implementation",
+                        icon: "fas fa-map",
+                        code: `Plan the P0 phase as outlined in P0_Test document. List tasks required for 
+secure authentication and core infrastructure. Specify files to create/update, 
+frameworks to use, and environment variables needed. Map tasks to P0 test cases.`
+                    },
+                    {
+                        id: "E",
+                        title: "Implement P0 Features",
+                        icon: "fas fa-code",
+                        code: `Implement P0 features:
+- Create login/registration pages
+- Configure authentication API routes
+- Set up user models in database schema
+- Add middleware for session handling
+
+Follow tech stack guide and architecture specs.`
+                    },
+                    {
+                        id: "F",
+                        title: "Generate Automated Tests",
+                        icon: "fas fa-vial",
+                        code: `Generate E2E tests for P0 features verifying:
+- User registration (valid/invalid input)
+- User login (valid/invalid credentials)
+- Session persistence and logout
+
+Place tests in tests/e2e/ directory.`
+                    },
+                    {
+                        id: "G",
+                        title: "Manual Testing Instructions",
+                        icon: "fas fa-mouse-pointer",
+                        code: `Provide detailed manual browser testing instructions for P0 features. Suggest 
+using Playwright or Chrome DevTools Recorder to automate manual steps. Explain 
+how to verify all edge cases are handled.`
+                    },
+                    {
+                        id: "H",
+                        title: "P0 Gap Analysis",
+                        icon: "fas fa-search",
+                        code: `Conduct gap analysis for P0. Confirm all tests pass and implementation matches 
+requirements. List any gaps or unimplemented edge cases and propose fixes. 
+Do not proceed to P1 until P0 is complete.`
+                    }
+                ]
+            },
+
+            // P1 Phase
+            p1: {
+                name: "Persistence, RBAC & Transactional Integrity",
+                badge: "P1 PHASE",
+                icon: "fas fa-database",
+                color: "p1",
+                prompts: [
+                    {
+                        id: "I",
+                        title: "Plan P1 Implementation",
+                        icon: "fas fa-map",
+                        code: `Plan P1 phase. Identify persistence operations (CRUD), RBAC requirements, and 
+transactional integrity rules. List files/modules to implement, map to P1 test cases.`
+                    },
+                    {
+                        id: "J",
+                        title: "Implement P1 Features",
+                        icon: "fas fa-code",
+                        code: `Implement P1 features:
+- Update database schema with roles/permissions
+- Create service classes with RBAC checks
+- Ensure transactional integrity
+- Integrate into API routes and components`
+                    },
+                    {
+                        id: "K",
+                        title: "Generate P1 Tests",
+                        icon: "fas fa-vial",
+                        code: `Generate automated tests covering persistence, RBAC, and transactions. Include 
+edge cases for unauthorized access and transaction rollbacks.`
+                    },
+                    {
+                        id: "L",
+                        title: "Manual Testing P1",
+                        icon: "fas fa-mouse-pointer",
+                        code: `Provide manual browser testing instructions for P1. Include verification of 
+permissions, persistence, and transaction behavior.`
+                    },
+                    {
+                        id: "M",
+                        title: "P1 Gap Analysis",
+                        icon: "fas fa-search",
+                        code: `Validate all P1 tests pass. Cross-check against PRD and tech specs. List gaps 
+if any. Only proceed to P2 after resolution.`
+                    }
+                ]
+            },
+
+            // P2 Phase
+            p2: {
+                name: "Scale & Performance Optimization, resilience Resilience & Scale",
+                badge: "P2 PHASE",
+                icon: "fas fa-rocket",
+                color: "p2",
+                prompts: [
+                    {
+                        id: "N",
+                        title: "Plan P2 Implementation",
+                        icon: "fas fa-map",
+                        code: `Plan P2 phase. Outline tasks for Scale & Performance features (service worker, manifest), 
+resilience caching, and performance/scalability enhancements.`
+                    },
+                    {
+                        id: "O",
+                        title: "Implement P2 Features",
+                        icon: "fas fa-code",
+                        code: `Implement P2 features:
+- Add service worker and web app manifest
+- Implement caching strategies for resilience support
+- Optimize performance and scalability
+- Ensure compatibility with existing code`
+                    },
+                    {
+                        id: "P",
+                        title: "Generate P2 Tests",
+                        icon: "fas fa-vial",
+                        code: `Develop automated tests for Scale & Performance behavior (installability, resilience loading), 
+caching correctness, and performance under various conditions.`
+                    },
+                    {
+                        id: "Q",
+                        title: "Manual Testing P2",
+                        icon: "fas fa-mouse-pointer",
+                        code: `Provide manual testing instructions for P2. Include steps to simulate resilience 
+conditions and verify application functionality.`
+                    },
+                    {
+                        id: "R",
+                        title: "P2 Gap Analysis",
+                        icon: "fas fa-search",
+                        code: `Confirm all P2 requirements are met and production-ready. Summarize remaining 
+issues if any, and propose solutions.`
+                    }
+                ]
+            },
+
+            // Final Verification
+            finalVerification: [
+                {
+                    id: "S",
+                    title: "Full Test Suite",
+                    icon: "fas fa-flask",
+                    description: "Run complete automated test suite covering P0, P1, P2. Report failures and confirm coverage.",
+                    code: `Run the entire automated test suite, including all P0, P1 and P2 tests. Report 
+any failing tests with expected vs actual behavior. Confirm all critical paths are covered.`
+                },
+                {
+                    id: "T",
+                    title: "Comprehensive Manual Test",
+                    icon: "fas fa-browser",
+                    description: "Perform full manual browser testing. Verify all edge cases and user experience.",
+                    code: `Perform comprehensive manual browser testing using combined test cases. Script tests 
+with Playwright or DevTools Recorder. Note any discrepancies or UX issues.`
+                },
+                {
+                    id: "U",
+                    title: "Documentation Alignment",
+                    icon: "fas fa-clipboard-check",
+                    description: "Cross-check implementation against all docs. Confirm every requirement is addressed.",
+                    code: `Cross-check final implementation against all documentation (PRD, tech specs, 
+database schemas, test plans). Confirm every feature and constraint is addressed.`
+                },
+                {
+                    id: "V",
+                    title: "Final Readiness Confirmation",
+                    icon: "fas fa-rocket",
+                    description: "Provide production readiness assessment",
+                    code: `Based on all test results and alignment checks, provide final assessment:
+Is the application production-ready?
+
+If YES: Summarize key features, tests, and validations confirming readiness.
+If NO: List remaining tasks or issues to resolve before deployment.`
+                }
+            ],
+
+            // Best Practices
+            bestPractices: [
+                {
+                    icon: "fas fa-check-circle",
+                    title: "Follow Sequential Order",
+                    description: "Always complete and validate each phase before moving to the next. Gap analysis is critical."
+                },
+                {
+                    icon: "fas fa-check-circle",
+                    title: "Let AI Handle Configuration",
+                    description: "The AI can install dependencies, configure environments, and run migrations automatically."
+                },
+                {
+                    icon: "fas fa-check-circle",
+                    title: "Review Documentation First",
+                    description: "Always start with initial prompts to ensure the AI understands your project structure."
+                },
+                {
+                    icon: "fas fa-check-circle",
+                    title: "Validate Each Step",
+                    description: "Use gap analysis prompts to ensure nothing is missed before advancing."
+                }
+            ]
+        };
+    </script>
+
+    <!-- Dynamic Content Generation -->
+    <div id="app"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // Calculate statistics from config
+        function calculateStats() {
+            const promptCount = 
+                CONFIG.phase1.prompts.length + 
+                CONFIG.p0.prompts.length + 
+                CONFIG.p1.prompts.length + 
+                CONFIG.p2.prompts.length + 
+                CONFIG.finalVerification.length;
+            
+            return {
+                totalPrompts: promptCount,
+                totalPhases: 3,
+                docFiles: CONFIG.documentation.length,
+                gettingStartedSteps: CONFIG.gettingStarted.length
+            };
+        }
+
+        const stats = calculateStats();
+
+        // Generate HTML
+        function generateHTML() {
+            return `
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-3 fw-bold mb-4">
+                        <i class="${CONFIG.tool.icon} me-3"></i>AI Assistant Prompt Guide
+                    </h1>
+                    <h3 class="mb-4">${CONFIG.tool.tagline}</h3>
+                    <p class="lead mb-4">${CONFIG.tool.description}</p>
+                    <div class="d-flex gap-3">
+                        <a href="#getting-started" class="btn btn-light btn-lg">
+                            <i class="fas fa-play me-2"></i>Get Started
+                        </a>
+                        <a href="#workflow" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-diagram-project me-2"></i>View Workflow
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.totalPrompts}</div>
+                        <div class="text-muted">Guided Prompts</div>
+                    </div>
+                    <div class="stat-card mt-3">
+                        <div class="stat-number">${stats.totalPhases}</div>
+                        <div class="text-muted">Development Phases</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        
+        <!-- Overview Stats -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-file-alt feature-icon mb-3"></i>
+                    <div class="stat-number">${stats.docFiles}</div>
+                    <div class="text-muted">Documentation Files</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-shield-alt feature-icon mb-3"></i>
+                    <div class="stat-number">P0</div>
+                    <div class="text-muted">${CONFIG.p0.name}</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-lock feature-icon mb-3"></i>
+                    <div class="stat-number">P1</div>
+                    <div class="text-muted">${CONFIG.p1.name.split(',')[0]}</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-rocket feature-icon mb-3"></i>
+                    <div class="stat-number">P2</div>
+                    <div class="text-muted">${CONFIG.p2.name.split(',')[0]}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Workflow Flowchart -->
+        <div class="section-card" id="workflow">
+            <h2 class="mb-4"><i class="fas fa-diagram-project me-2"></i>Development Workflow</h2>
+            <div class="mermaid">
+                graph TB
+                    Start([Start: Unzip Project]) --> Setup[Setup Environment]
+                    Setup --> Review[Review Documentation]
+                    Review --> Config[Configure & Install]
+                    Config --> P0{P0 Phase<br/>${CONFIG.p0.name.split('&')[0]}}
+                    P0 --> P0Plan[Plan P0]
+                    P0Plan --> P0Impl[Implement Features]
+                    P0Impl --> P0Test[Test & Validate]
+                    P0Test --> P0Gap{Gap Analysis<br/>Pass?}
+                    P0Gap -->|No| P0Impl
+                    P0Gap -->|Yes| P1{P1 Phase<br/>${CONFIG.p1.name.split(',')[0]}}
+                    P1 --> P1Plan[Plan P1]
+                    P1Plan --> P1Impl[Implement Features]
+                    P1Impl --> P1Test[Test & Validate]
+                    P1Test --> P1Gap{Gap Analysis<br/>Pass?}
+                    P1Gap -->|No| P1Impl
+                    P1Gap -->|Yes| P2{P2 Phase<br/>${CONFIG.p2.name.split(',')[0]}}
+                    P2 --> P2Plan[Plan P2]
+                    P2Plan --> P2Impl[Implement Scale & Performance]
+                    P2Impl --> P2Test[Test & Validate]
+                    P2Test --> P2Gap{Gap Analysis<br/>Pass?}
+                    P2Gap -->|No| P2Impl
+                    P2Gap -->|Yes| Final[Final Verification]
+                    Final --> Deploy([Production Ready])
+                    
+                    style Start fill:#667eea,color:#fff
+                    style P0 fill:#f5576c,color:#fff
+                    style P1 fill:#00f2fe,color:#fff
+                    style P2 fill:#38ef7d,color:#fff
+                    style Deploy fill:#11998e,color:#fff
+            </div>
+        </div>
+
+        <!-- Phase Distribution Chart -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="fas fa-chart-pie me-2"></i>Prompt Distribution Across Phases</h2>
+            <canvas id="phaseChart" height="100"></canvas>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="section-card" id="getting-started">
+            <h2 class="mb-4"><i class="fas fa-play-circle me-2"></i>Getting Started</h2>
+            
+            <div class="timeline">
+                ${CONFIG.gettingStarted.map(step => `
+                <div class="timeline-item">
+                    <div class="d-flex">
+                        <div class="step-number">${step.number}</div>
+                        <div>
+                            <h4>${step.title}</h4>
+                            <p>${step.description}</p>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Tool Information Section -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="${CONFIG.tool.icon} me-2"></i>${CONFIG.tool.name}</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-star text-warning me-2"></i>Key Features</h5>
+                    <ul class="list-unstyled">
+                        ${CONFIG.tool.features.map(feature => `
+                        <li class="mb-2"><i class="${feature.icon} text-success me-2"></i>${feature.text}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-cog text-primary me-2"></i>Development Modes</h5>
+                    <div class="accordion" id="modesAccordion">
+                        ${CONFIG.tool.modes.map((mode, index) => `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#mode${index}">
+                                    ${mode.title}
+                                </button>
+                            </h2>
+                            <div id="mode${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" data-bs-parent="#modesAccordion">
+                                <div class="accordion-body">
+                                    ${mode.description}
+                                </div>
+                            </div>
+                        </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mb-3"><i class="fas fa-link text-info me-2"></i>Official Resources</h5>
+            <div class="row">
+                ${CONFIG.tool.resources.map(resource => `
+                <div class="col-md-6">
+                    <a href="${resource.url}" target="_blank" class="resource-link">
+                        <i class="${resource.icon} ${resource.iconColor} me-3 fs-4"></i>
+                        <div>
+                            <strong>${resource.title}</strong>
+                            <div class="text-muted small">${resource.description}</div>
+                        </div>
+                    </a>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Documentation Review -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="${CONFIG.phase1.icon} me-2"></i>Phase 1: ${CONFIG.phase1.name}</h2>
+            
+            ${CONFIG.phase1.prompts.map(prompt => `
+            <div class="prompt-card">
+                <h5><i class="${prompt.icon} me-2"></i>Prompt ${prompt.id}: ${prompt.title}</h5>
+                <p class="mb-2">${prompt.description}</p>
+                <div class="code-block">${prompt.code}</div>
+            </div>
+            `).join('')}
+        </div>
+
+        <!-- P0 Phase -->
+        <div class="section-card">
+            <span class="phase-badge ${CONFIG.p0.color}">${CONFIG.p0.badge}</span>
+            <h2 class="mb-4"><i class="${CONFIG.p0.icon} me-2"></i>${CONFIG.p0.name}</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <canvas id="p0ProgressChart" height="80"></canvas>
+                </div>
+            </div>
+
+            <div class="accordion" id="p0Accordion">
+                ${CONFIG.p0.prompts.map((prompt, index) => `
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#p0prompt${prompt.id}">
+                            <i class="${prompt.icon} me-2"></i>Prompt ${prompt.id}: ${prompt.title}
+                        </button>
+                    </h2>
+                    <div id="p0prompt${prompt.id}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" data-bs-parent="#p0Accordion">
+                        <div class="accordion-body">
+                            <div class="code-block">${prompt.code}</div>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- P1 Phase -->
+        <div class="section-card">
+            <span class="phase-badge ${CONFIG.p1.color}">${CONFIG.p1.badge}</span>
+            <h2 class="mb-4"><i class="${CONFIG.p1.icon} me-2"></i>${CONFIG.p1.name}</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <canvas id="p1ProgressChart" height="80"></canvas>
+                </div>
+            </div>
+
+            <div class="accordion" id="p1Accordion">
+                ${CONFIG.p1.prompts.map((prompt, index) => `
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p1prompt${prompt.id}">
+                            <i class="${prompt.icon} me-2"></i>Prompt ${prompt.id}: ${prompt.title}
+                        </button>
+                    </h2>
+                    <div id="p1prompt${prompt.id}" class="accordion-collapse collapse" data-bs-parent="#p1Accordion">
+                        <div class="accordion-body">
+                            <div class="code-block">${prompt.code}</div>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- P2 Phase -->
+        <div class="section-card">
+            <span class="phase-badge ${CONFIG.p2.color}">${CONFIG.p2.badge}</span>
+            <h2 class="mb-4"><i class="${CONFIG.p2.icon} me-2"></i>${CONFIG.p2.name}</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <canvas id="p2ProgressChart" height="80"></canvas>
+                </div>
+            </div>
+
+            <div class="accordion" id="p2Accordion">
+                ${CONFIG.p2.prompts.map((prompt, index) => `
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p2prompt${prompt.id}">
+                            <i class="${prompt.icon} me-2"></i>Prompt ${prompt.id}: ${prompt.title}
+                        </button>
+                    </h2>
+                    <div id="p2prompt${prompt.id}" class="accordion-collapse collapse" data-bs-parent="#p2Accordion">
+                        <div class="accordion-body">
+                            <div class="code-block">${prompt.code}</div>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Final Verification -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="fas fa-check-double me-2"></i>Final Verification & Production Readiness</h2>
+            
+            <div class="row">
+                ${CONFIG.finalVerification.map(prompt => `
+                <div class="col-md-${CONFIG.finalVerification.length === 4 ? '3' : '4'} mb-3">
+                    <div class="prompt-card h-100">
+                        <h5><i class="${prompt.icon} me-2"></i>Prompt ${prompt.id}</h5>
+                        <p><strong>${prompt.title}</strong></p>
+                        <p class="small text-muted">${prompt.description}</p>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+
+            <div class="prompt-card mt-4">
+                <h5><i class="fas fa-rocket me-2"></i>Prompt V: Final Readiness Confirmation</h5>
+                <div class="code-block">${CONFIG.finalVerification.find(p => p.id === 'V').code}</div>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="fas fa-lightbulb me-2"></i>Best Practices & Tips</h2>
+            
+            <div class="row">
+                ${CONFIG.bestPractices.map(practice => `
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="${practice.icon} text-success me-3 mt-1 fs-4"></i>
+                        <div>
+                            <h5>${practice.title}</h5>
+                            <p class="text-muted">${practice.description}</p>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="section-card">
+            <h2 class="mb-4"><i class="fas fa-tasks me-2"></i>Your Progress Tracker</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <canvas id="overallProgressChart"></canvas>
+                </div>
+                <div class="col-lg-4">
+                    <div class="progress-tracker">
+                        <h5 class="mb-3">Completion Checklist</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check1">
+                            <label class="form-check-label" for="check1">
+                                Documentation Review
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check2">
+                            <label class="form-check-label" for="check2">
+                                P0 Implementation
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check3">
+                            <label class="form-check-label" for="check3">
+                                P1 Implementation
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check4">
+                            <label class="form-check-label" for="check4">
+                                P2 Implementation
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check5">
+                            <label class="form-check-label" for="check5">
+                                Final Verification
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="${CONFIG.tool.icon} me-2"></i>AI Assistant Prompt Guide</h5>
+                    <p class="text-muted">Streamline your development with ${CONFIG.tool.name}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with Bootstrap 5 & Chart.js</p>
+                    <p class="text-muted small">Interactive Guide for Modern Development</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+            `;
+        }
+
+        // Render the page
+        document.getElementById('app').innerHTML = generateHTML();
+        document.getElementById('page-title').textContent = `AI Assistant Prompt Guide - ${CONFIG.tool.name}`;
+
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#764ba2',
+                lineColor: '#667eea',
+                secondaryColor: '#f5576c',
+                tertiaryColor: '#38ef7d'
+            }
+        });
+
+        // Initialize Charts
+        setTimeout(() => {
+            // Phase Distribution Chart
+            const phaseCtx = document.getElementById('phaseChart').getContext('2d');
+            new Chart(phaseCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        `Setup & Review (${CONFIG.phase1.prompts.length})`,
+                        `P0 Phase (${CONFIG.p0.prompts.length})`,
+                        `P1 Phase (${CONFIG.p1.prompts.length})`,
+                        `P2 Phase (${CONFIG.p2.prompts.length})`,
+                        `Final Verification (${CONFIG.finalVerification.length})`
+                    ],
+                    datasets: [{
+                        data: [
+                            CONFIG.phase1.prompts.length,
+                            CONFIG.p0.prompts.length,
+                            CONFIG.p1.prompts.length,
+                            CONFIG.p2.prompts.length,
+                            CONFIG.finalVerification.length
+                        ],
+                        backgroundColor: [
+                            '#667eea',
+                            '#f5576c',
+                            '#00f2fe',
+                            '#38ef7d',
+                            '#11998e'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Helper function for phase charts
+            function createPhaseChart(canvasId, prompts, color) {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: prompts.map(p => p.title),
+                        datasets: [{
+                            label: 'Tasks',
+                            data: prompts.map(() => 1),
+                            backgroundColor: color,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Phase Charts
+            createPhaseChart('p0ProgressChart', CONFIG.p0.prompts, '#f5576c');
+            createPhaseChart('p1ProgressChart', CONFIG.p1.prompts, '#00f2fe');
+            createPhaseChart('p2ProgressChart', CONFIG.p2.prompts, '#38ef7d');
+
+            // Overall Progress Chart
+            const overallCtx = document.getElementById('overallProgressChart').getContext('2d');
+            new Chart(overallCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Start', 'Setup', 'P0', 'P1', 'P2', 'Verify', 'Production'],
+                    datasets: [{
+                        label: 'Development Progress',
+                        data: [0, 15, 35, 60, 85, 95, 100],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }, 100);
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+<section id="project-context" style="margin:32px 0; padding:20px; border-radius:12px; background:linear-gradient(135deg, rgba(14,165,233,0.12), rgba(99,102,241,0.12));">
+  <h2 style="font-size:20px; margin:0 0 10px; color:#0f172a;">Project Context</h2>
+  <p style="margin:0 0 8px; color:#1e293b;">Title: <strong>shre</strong></p>
+  <p style="margin:0 0 8px; color:#1e293b;">Stack: <strong>Next.js/React + NestJS + PostgreSQL</strong> · Security: <strong>Standard (Auth, JWT, HTTPS)</strong></p>
+  <p style="margin:0 0 4px; color:#0f172a; font-weight:600;">Docs to load:</p>
+  <ul style="margin:0; padding-left:18px; color:#0f172a;"><li>01_PRD.md</li><li>02_MASTER_TECH_SPECS.md</li><li>03_TECH_STACK_GUIDE.md</li><li>04_DATABASE_SCHEMAS.md</li><li>05_AUTOMATED_TEST_SUITE.md</li><li>06_MANUAL_TEST_GUIDELINES.md</li><li>README.md</li><li>Phase manuals (P0/P1/P2)</li></ul>
+  <p style="margin:8px 0 0; color:#0f172a; font-weight:600;">Follow P0 → P1 → P2. Use Improve/Review before final artifacts.</p>
+</section>
+<div style="margin:24px 0; display:flex; align-items:center; gap:12px;">
+  <img src="data:image/png;base64,/aishift-logo.png?base64" alt="AIShift" style="height:36px; width:auto;" />
+  <span style="color:#0f172a; font-weight:700;">AIShift</span>
+</div>
+<footer style="margin-top:32px; padding:16px 0; color:#475569; font-size:12px; text-align:center;">© AIShift · <a href="https://www.aishift.dev" target="_blank" rel="noopener" style="color:#0f172a; font-weight:600;">aishift.dev</a> · <a href="mailto:info@aishift.dev" style="color:#0f172a; font-weight:600;">info@aishift.dev</a></footer></body>
+</html>

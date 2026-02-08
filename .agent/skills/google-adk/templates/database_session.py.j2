@@ -1,0 +1,44 @@
+from google.adk.sessions import Session, SessionService
+from sqlalchemy import create_engine, Column, String, JSON, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import datetime
+import os
+
+Base = declarative_base()
+
+class SessionRecord(Base):
+    __tablename__ = "adk_sessions"
+    id = Column(String, primary_key=True)
+    user_id = Column(String, index=True)
+    state = Column(JSON)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+class MyDatabaseSessionService(SessionService):
+    def __init__(self, db_url: str):
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        self.SessionLocal = sessionmaker(bind=self.engine)
+
+    def get_session(self, user_id: str, session_id: str):
+        db = self.SessionLocal()
+        try:
+            record = db.query(SessionRecord).filter_by(id=session_id, user_id=user_id).first()
+            if record:
+                return Session(id=record.id, user_id=record.user_id, state=record.state)
+            return None
+        finally:
+            db.close()
+
+    def create_session(self, user_id: str, session_id: str, state: dict):
+        db = self.SessionLocal()
+        try:
+            record = SessionRecord(id=session_id, user_id=user_id, state=state)
+            db.merge(record)
+            db.commit()
+            return Session(id=session_id, user_id=user_id, state=state)
+        finally:
+            db.close()
+
+db_url = os.getenv("DATABASE_URL", "sqlite:///./sessions.db")
+db_session_service = MyDatabaseSessionService(db_url)

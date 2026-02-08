@@ -1,0 +1,15 @@
+from google.adk.agents import LlmAgent
+from .tools import agent_tools
+import os
+
+# Load instructions from local instructions.md
+instructions_path = os.path.join(os.path.dirname(__file__), "instructions.md")
+with open(instructions_path, "r") as f:
+    agent_instructions = f.read()
+
+{{ agent_name_var }} = LlmAgent(
+    name="{{ agent_name }}",
+    model="{{ model_name }}",
+    instruction=agent_instructions,
+    tools=agent_tools
+)

@@ -1,0 +1,90 @@
+{
+  "root": {
+    "frontend": {
+      "src": {
+        "components": {
+          "auth": {
+            "Login.tsx": "File",
+            "Register.tsx": "File"
+          },
+          "userManagement": {
+            "UserList.tsx": "File",
+            "UserDetail.tsx": "File"
+          }
+        },
+        "services": {
+          "AuthService.ts": "File",
+          "UserService.ts": "File"
+        },
+        "utils": {
+          "api.ts": "File",
+          "constants.ts": "File"
+        },
+        "index.tsx": "File",
+        "App.tsx": "File"
+      },
+      "public": {
+        "index.html": "File"
+      },
+      "package.json": "File",
+      "tsconfig.json": "File"
+    },
+    "backend": {
+      "src": {
+        "controllers": {
+          "authController.ts": "File",
+          "userController.ts": "File"
+        },
+        "models": {
+          "User.ts": "File",
+          "Document.ts": "File"
+        },
+        "routes": {
+          "authRoutes.ts": "File",
+          "userRoutes.ts": "File"
+        },
+        "services": {
+          "AuthService.ts": "File",
+          "DocumentService.ts": "File"
+        },
+        "middleware": {
+          "authMiddleware.ts": "File",
+          "errorHandler.ts": "File"
+        },
+        "config": {
+          "database.ts": "File",
+          "auth.ts": "File"
+        },
+        "index.ts": "File"
+      },
+      "package.json": "File",
+      "tsconfig.json": "File"
+    },
+    "mobile": {
+      "src": {
+        "components": {
+          "Home.tsx": "File",
+          "Profile.tsx": "File"
+        },
+        "services": {
+          "ApiService.ts": "File"
+        },
+        "utils": {
+          "storage.ts": "File"
+        },
+        "index.tsx": "File",
+        "App.tsx": "File"
+      },
+      "package.json": "File",
+      "tsconfig.json": "File"
+    },
+    "deployment": {
+      "Dockerfile": "File",
+      "docker-compose.yml": "File",
+      "k8s": {
+        "deployment.yaml": "File",
+        "service.yaml": "File"
+      }
+    }
+  }
+}

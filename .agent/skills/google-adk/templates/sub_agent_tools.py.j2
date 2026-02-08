@@ -1,0 +1,21 @@
+import os
+import httpx
+from typing import Any, Dict
+
+# Base URL from .env
+{# Note: The actual skill execution will replace these placeholders #}
+BASE_URL = os.getenv("{{ api_base_url_env }}", "http://localhost:8000")
+
+async def {{ tool_name }}({{ tool_params }}) -> str:
+    """
+    {{ tool_description }}
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.{{ method }}(
+            f"{BASE_URL}{{ endpoint }}",
+            json={{ payload_mapping }}
+        )
+        response.raise_for_status()
+        return response.text
+
+agent_tools = [{{ tool_name }}]

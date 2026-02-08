@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table - Bootstrap Frontend</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fc;
+            padding: 2rem 0;
+        }
+
+        .datatable-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .datatable-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            padding: 1.5rem;
+        }
+
+        .datatable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .datatable-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            max-width: 300px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .table thead th {
+            background-color: #f8f9fc;
+            border-bottom: 2px solid #4e73df;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .table thead th:hover {
+            background-color: #e9ecef;
+        }
+
+        .table thead th .sort-icon {
+            opacity: 0.3;
+            margin-left: 0.5rem;
+        }
+
+        .table thead th.sorted .sort-icon {
+            opacity: 1;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+
+        .table tbody tr.selected {
+            background-color: rgba(78, 115, 223, 0.1);
+        }
+
+        .pagination-info {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        .bulk-actions {
+            background-color: #4e73df;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="datatable-container">
+        <!-- Page Header -->
+        <div class="mb-4">
+            <h2 class="mb-1">User Management</h2>
+            <p class="text-muted mb-0">Manage and view all registered users</p>
+        </div>
+
+        <!-- Bulk Actions Bar -->
+        <div class="bulk-actions" id="bulkActions">
+            <div>
+                <strong id="selectedCount">0</strong> items selected
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-light" onclick="exportSelected()">
+                    <i class="bi bi-download"></i> Export
+                </button>
+                <button class="btn btn-sm btn-light" onclick="deleteSelected()">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+                <button class="btn btn-sm btn-light" onclick="clearSelection()">
+                    <i class="bi bi-x"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Table Card -->
+        <div class="datatable-card">
+            <!-- Table Header with Controls -->
+            <div class="datatable-header">
+                <div class="datatable-controls">
+                    <div class="search-box">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="search" class="form-control bg-light border-start-0"
+                                placeholder="Search users..." id="searchInput">
+                        </div>
+                    </div>
+
+                    <select class="form-select" id="roleFilter" style="width: auto;">
+                        <option value="">All Roles</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Manager">Manager</option>
+                        <option value="User">User</option>
+                    </select>
+
+                    <select class="form-select" id="statusFilter" style="width: auto;">
+                        <option value="">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+
+                <div class="table-actions">
+                    <button class="btn btn-outline-primary" onclick="refreshTable()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="exportTable()">
+                        <i class="bi bi-download"></i> Export
+                    </button>
+                    <button class="btn btn-primary" onclick="addUser()">
+                        <i class="bi bi-plus-lg"></i> Add User
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">
+                                <input type="checkbox" class="form-check-input" id="selectAll">
+                            </th>
+                            <th onclick="sortTable('name')">
+                                Name
+                                <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th onclick="sortTable('email')">
+                                Email
+                                <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th onclick="sortTable('role')">
+                                Role
+                                <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th onclick="sortTable('status')">
+                                Status
+                                <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th onclick="sortTable('joinDate')">
+                                Join Date
+                                <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th style="width: 120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="pagination-info">
+                    Showing <strong id="showingStart">1</strong> to <strong id="showingEnd">10</strong>
+                    of <strong id="totalRecords">50</strong> entries
+                </div>
+
+                <nav>
+                    <ul class="pagination mb-0" id="pagination">
+                        <!-- Pagination will be generated by JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sample data
+        const sampleUsers = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', joinDate: '2024-01-15' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Manager', status: 'Active', joinDate: '2024-01-20' },
+            { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Active', joinDate: '2024-02-01' },
+            { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'User', status: 'Inactive', joinDate: '2024-02-10' },
+            { id: 5, name: 'Charlie Brown', email: 'charlie@example.com', role: 'Manager', status: 'Active', joinDate: '2024-02-15' },
+            { id: 6, name: 'Diana Prince', email: 'diana@example.com', role: 'Admin', status: 'Active', joinDate: '2024-03-01' },
+            { id: 7, name: 'Eve Davis', email: 'eve@example.com', role: 'User', status: 'Pending', joinDate: '2024-03-05' },
+            { id: 8, name: 'Frank Miller', email: 'frank@example.com', role: 'User', status: 'Active', joinDate: '2024-03-10' },
+        ];
+
+        let currentData = [...sampleUsers];
+        let currentPage = 1;
+        let itemsPerPage = 5;
+        let sortColumn = '';
+        let sortDirection = 'asc';
+        let selectedRows = new Set();
+
+        // Initialize table
+        function initTable() {
+            renderTable();
+            setupEventListeners();
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = currentData.slice(start, end);
+
+            tbody.innerHTML = pageData.map(user => `
+                <tr data-id="${user.id}" class="${selectedRows.has(user.id) ? 'selected' : ''}">
+                    <td>
+                        <input type="checkbox" class="form-check-input row-checkbox" 
+                               value="${user.id}" ${selectedRows.has(user.id) ? 'checked' : ''}>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random" 
+                                 class="avatar me-2" alt="${user.name}">
+                            <span>${user.name}</span>
+                        </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td><span class="badge bg-secondary">${user.role}</span></td>
+                    <td>
+                        <span class="badge ${getStatusClass(user.status)}">${user.status}</span>
+                    </td>
+                    <td>${formatDate(user.joinDate)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="editUser(${user.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteUser(${user.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updatePagination();
+            updateBulkActions();
+        }
+
+        // Get status badge class
+        function getStatusClass(status) {
+            const classes = {
+                'Active': 'bg-success',
+                'Inactive': 'bg-secondary',
+                'Pending': 'bg-warning'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        // Sort table
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            currentData.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+
+                if (sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+
+            renderTable();
+        }
+
+        // Filter table
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            currentData = sampleUsers.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm);
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                const matchesStatus = !statusFilter || user.status === statusFilter;
+
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(currentData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+
+            let html = '';
+
+            // Previous button
+            html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
+            </li>`;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                    </li>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next button
+            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
+            </li>`;
+
+            pagination.innerHTML = html;
+
+            // Update info
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, currentData.length);
+            document.getElementById('showingStart').textContent = start;
+            document.getElementById('showingEnd').textContent = end;
+            document.getElementById('totalRecords').textContent = currentData.length;
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(currentData.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', filterTable);
+
+            // Filters
+            document.getElementById('roleFilter').addEventListener('change', filterTable);
+            document.getElementById('statusFilter').addEventListener('change', filterTable);
+
+            // Select all
+            document.getElementById('selectAll').addEventListener('change', function () {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                    const id = parseInt(cb.value);
+                    if (this.checked) {
+                        selectedRows.add(id);
+                    } else {
+                        selectedRows.delete(id);
+                    }
+                });
+                renderTable();
+            });
+
+            // Row checkboxes (delegated)
+            document.getElementById('tableBody').addEventListener('change', function (e) {
+                if (e.target.classList.contains('row-checkbox')) {
+                    const id = parseInt(e.target.value);
+                    if (e.target.checked) {
+                        selectedRows.add(id);
+                    } else {
+                        selectedRows.delete(id);
+                    }
+                    renderTable();
+                }
+            });
+        }
+
+        // Update bulk actions
+        function updateBulkActions() {
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+
+            if (selectedRows.size > 0) {
+                bulkActions.classList.add('show');
+                selectedCount.textContent = selectedRows.size;
+            } else {
+                bulkActions.classList.remove('show');
+            }
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedRows.clear();
+            document.getElementById('selectAll').checked = false;
+            renderTable();
+        }
+
+        // Action functions
+        function addUser() {
+            alert('Add user functionality would open a modal or navigate to a form');
+        }
+
+        function editUser(id) {
+            alert(`Edit user ${id}`);
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert(`Delete user ${id}`);
+            }
+        }
+
+        function deleteSelected() {
+            if (confirm(`Delete ${selectedRows.size} selected users?`)) {
+                alert(`Deleting ${selectedRows.size} users`);
+                clearSelection();
+            }
+        }
+
+        function exportSelected() {
+            alert(`Exporting ${selectedRows.size} selected users`);
+        }
+
+        function exportTable() {
+            alert('Export all users to CSV');
+        }
+
+        function refreshTable() {
+            alert('Refreshing table data...');
+            renderTable();
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+
+</html>

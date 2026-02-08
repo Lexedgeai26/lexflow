@@ -1,0 +1,1 @@
+1. Verify user login and registration flows. 2. Check CRUD operations for employee profiles and documents. 3. Validate secure storage and retrieval of documents. 4. Monitor API responses for performance under load. 5. Conduct usability testing for the mobile application. 6. Ensure compliance with security protocols.

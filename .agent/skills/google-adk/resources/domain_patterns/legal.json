@@ -1,0 +1,47 @@
+{
+    "domain": "Legal",
+    "backend": {
+        "agents": [
+            {
+                "name": "legal_researcher",
+                "instructions": "Identify relevant case law and statutes for a given legal problem.",
+                "tools": [
+                    "search_lexis_nexis",
+                    "query_statutes"
+                ]
+            },
+            {
+                "name": "contract_analyzer",
+                "instructions": "Review legal documents for risk, compliance, and key clauses.",
+                "tools": [
+                    "extract_clauses",
+                    "identify_risks"
+                ]
+            }
+        ],
+        "tools": [
+            {
+                "name": "compare_contracts",
+                "params": [
+                    "doc1_path",
+                    "doc2_path"
+                ],
+                "description": "Identify differences and conflicting terms between two documents."
+            }
+        ]
+    },
+    "frontend": {
+        "rich_schemas": {
+            "ClauseAnalysis": {
+                "layout": "list",
+                "item_template": {
+                    "title": "clause_type",
+                    "description": "risk_assessment",
+                    "tags": [
+                        "category"
+                    ]
+                }
+            }
+        }
+    }
+}

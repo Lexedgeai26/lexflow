@@ -1,0 +1,36 @@
+{
+    "domain": "Customer Support",
+    "backend": {
+        "agents": [
+            {
+                "name": "triage_agent",
+                "instructions": "Classify user issues and resolve simple queries using the knowledge base.",
+                "tools": [
+                    "search_kb",
+                    "check_order_status"
+                ]
+            },
+            {
+                "name": "resolutions_specialist",
+                "instructions": "Handle complex refund, billing, or technical issues.",
+                "tools": [
+                    "authorize_refund",
+                    "update_billing_records"
+                ]
+            }
+        ]
+    },
+    "frontend": {
+        "rich_schemas": {
+            "TicketSummary": {
+                "layout": "card",
+                "title": "subject",
+                "status_badge": "current_status",
+                "details": [
+                    "priority",
+                    "assigned_team"
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,86 @@
+import { useState, useRef, useCallback } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import { createAdkSession, parseAdkSse } from './services/adkApiService';
+
+export default function App() {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const accumulatedTextRef = useRef("");
+
+  const handleSubmit = async (query: string) => {
+    setIsLoading(true);
+    const userId = "user_123";
+    const sessionId = uuidv4();
+    const appName = "{{ app_name }}";
+
+    try {
+      await createAdkSession("", appName, userId, sessionId);
+      
+      setMessages(prev => [...prev, { role: 'user', content: query }]);
+      const aiMsgId = Date.now().toString();
+      setMessages(prev => [...prev, { role: 'ai', content: '', id: aiMsgId }]);
+      accumulatedTextRef.current = "";
+
+      const response = await fetch("/api/run_sse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appName, userId, sessionId,
+          newMessage: { parts: [{ text: query }], role: "user" }
+        })
+      });
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const event = parseAdkSse(line.substring(5).trim());
+              if (event?.content?.parts) {
+                const text = event.content.parts.map(p => p.text || "").join("");
+                accumulatedTextRef.current += text;
+                setMessages(prev => prev.map(m => 
+                  m.id === aiMsgId ? { ...m, content: accumulatedTextRef.current } : m
+                ));
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-neutral-900 text-white p-4">
+      <div className="flex-1 overflow-y-auto space-y-4">
+        {messages.map((m, i) => (
+          <div key={i} className={`p-4 rounded-xl ${m.role === 'user' ? 'bg-blue-600 self-end' : 'bg-neutral-800'}`}>
+            {m.content}
+          </div>
+        ))}
+        {isLoading && <div className="animate-pulse">Thinking...</div>}
+      </div>
+      <div className="mt-4">
+        <input 
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e.currentTarget.value)}
+          className="w-full p-4 bg-neutral-800 rounded-xl outline-none"
+          placeholder="Ask me anything..."
+        />
+      </div>
+    </div>
+  );
+}

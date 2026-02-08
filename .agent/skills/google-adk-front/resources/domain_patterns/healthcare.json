@@ -1,0 +1,59 @@
+{
+    "domain": "Healthcare",
+    "backend": {
+        "agents": [
+            {
+                "name": "intake_specialist",
+                "instructions": "Gather symptoms and medical history with empathy.",
+                "tools": [
+                    "get_patient_history",
+                    "check_symptoms"
+                ]
+            },
+            {
+                "name": "diagnostic_specialist",
+                "instructions": "Analyze lab results and clinical findings for anomalies.",
+                "tools": [
+                    "analyze_lab_data",
+                    "flag_risk_factors"
+                ]
+            }
+        ],
+        "tools": [
+            {
+                "name": "generate_soap_note",
+                "params": [
+                    "subjective",
+                    "objective",
+                    "assessment",
+                    "plan"
+                ],
+                "description": "Create a structured clinical documentation note."
+            }
+        ]
+    },
+    "frontend": {
+        "rich_schemas": {
+            "SOAPNote": {
+                "layout": "card",
+                "fields": [
+                    "S",
+                    "O",
+                    "A",
+                    "P"
+                ],
+                "styling": "border-l-4 border-blue-500"
+            },
+            "LabAnalysis": {
+                "layout": "table",
+                "columns": [
+                    "test",
+                    "value",
+                    "unit",
+                    "range",
+                    "status"
+                ]
+            }
+        }
+    }
+}
