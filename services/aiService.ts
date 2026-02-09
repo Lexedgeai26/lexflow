@@ -1,20 +1,25 @@
 
 import { LegalProject, LegalContext, SkillDefinition, AnalysisResult, ChatMessage } from '../types';
 
-const API_BASE = '/api/ai';
+const isTauri =
+    typeof window !== 'undefined' &&
+    ((window as any).__TAURI_INTERNALS__ || (window as any).__TAURI__);
+const isElectron = typeof window !== 'undefined' && window.location.protocol === 'file:';
+const API_BASE = (isTauri || isElectron) ? 'http://127.0.0.1:8787/api/ai' : '/api/ai';
 
 export const analyzeDocument = async (
     text: string,
     matterType: string,
     activeSkills: SkillDefinition[],
     context: LegalContext,
-    llmConfig?: { provider?: string; apiKey?: string }
+    llmConfig?: { provider?: string; apiKey?: string },
+    userId?: string
 ): Promise<AnalysisResult> => {
     try {
         const response = await fetch(`${API_BASE}/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, matterType, activeSkills, context, llmConfig })
+            body: JSON.stringify({ text, matterType, activeSkills, context, llmConfig, userId })
         });
 
         if (!response.ok) {
@@ -35,7 +40,8 @@ export const chatWithProject = async (
     message: string,
     history: ChatMessage[] = [],
     onChunk: (text: string) => void,
-    llmConfig?: { provider?: string; apiKey?: string }
+    llmConfig?: { provider?: string; apiKey?: string },
+    userId?: string
 ) => {
     const docContents = project.documents.map(d => `Document Name: ${d.name}\nContent:\n${d.content}`).join('\n\n');
     const analysisSummary = project.analysis ? `Analysis Summary: ${project.analysis.summary}\nOverall Risk: ${project.analysis.overallRisk}\nRisk Score: ${project.analysis.riskScore}` : 'No analysis performed yet.';
@@ -51,7 +57,8 @@ export const chatWithProject = async (
                 context,
                 message,
                 history,
-                llmConfig
+                llmConfig,
+                userId
             })
         });
 

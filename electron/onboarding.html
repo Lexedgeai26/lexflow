@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>LexEdge Flow - Setup</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text-main);
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 3rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: var(--primary);
+      color: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: white;
+    }
+
+    p {
+      margin: 0 0 2rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      text-align: left;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      border: 1px solid var(--border);
+    }
+
+    .note-icon {
+      font-size: 1.2rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-sizing: border-box;
+      font-size: 1rem;
+      transition: all 0.2s;
+      background: #0f172a;
+      color: white;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #0f172a;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: white;
+      border-color: #cbd5e1;
+    }
+
+    /* Success State */
+    .success-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(30, 41, 59, 0.98);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px;
+      animation: fadeIn 0.3s ease-out;
+      z-index: 10;
+      color: white;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" style="position: relative;">
+    <div class="icon-wrapper"
+      style="background: #0f172a; border: 1px solid #334155; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); width: 200px; height: auto; padding: 20px; margin-bottom: 2rem;">
+      <img src="logo.png" style="width: 100%; height: auto; border-radius: 8px;" />
+    </div>
+    <h1 id="title">Welcome to LexEdge Flow</h1>
+    <p id="subtitle">To get started, please enter your Gemini API Key.</p>
+
+    <div class="note">
+      <span class="note-icon">🔒</span>
+      <div>
+        <strong>Secure & Private</strong><br />
+        Your API key is stored locally on your device. It is never shared with us.
+      </div>
+    </div>
+
+    <input type="text" id="apiKey" placeholder="Enter your API Key (AIza...)" />
+
+    <div class="btn-group">
+      <button id="cancelBtn" class="btn-secondary" onclick="cancel()" style="display: none;">Cancel</button>
+      <button id="saveBtn" class="btn-primary" onclick="saveKey()">Get Started</button>
+    </div>
+
+    <div id="successOverlay" class="success-overlay">
+      <div class="success-icon">✅</div>
+      <h2>Key Saved!</h2>
+      <p>Launching application...</p>
+    </div>
+  </div>
+
+  <script>
+    function saveKey() {
+      const key = document.getElementById('apiKey').value.trim();
+      const successOverlay = document.getElementById('successOverlay');
+
+      if (key) {
+        if (window.electronAPI) {
+          // Show success animation
+          successOverlay.style.display = 'flex';
+
+          setTimeout(() => {
+            window.electronAPI.setApiKey(key);
+          }, 1500);
+        } else {
+          alert("Error: Electron API not loaded.");
+        }
+      } else {
+        alert('Please enter a valid API key');
+      }
+    }
+
+    function cancel() {
+      if (window.electronAPI) {
+        window.electronAPI.cancelOnboarding();
+      }
+    }
+
+    // Check if key exists and update UI
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.electronAPI) {
+        const currentKey = window.electronAPI.getApiKey();
+        if (currentKey) {
+          // Update Mode
+          document.getElementById('title').innerText = 'Update API Key';
+          document.getElementById('subtitle').innerText = 'Enter a new Gemini API Key to replace the current one.';
+          document.getElementById('saveBtn').innerText = 'Update Key';
+          document.getElementById('cancelBtn').style.display = 'block';
+          // Optional: Pre-fill? document.getElementById('apiKey').value = currentKey;
+        } else {
+          // Welcome Mode (Default)
+          document.getElementById('cancelBtn').style.display = 'none'; // Cannot cancel if no key
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

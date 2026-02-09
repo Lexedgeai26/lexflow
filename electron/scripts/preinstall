@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -rf "$HOME/Library/Application Support/Test Factory App"
+rm -rf "$HOME/Library/Application Support/test-factory-app-desktop"
+rm -rf "$HOME/Library/Preferences/com.test.factory.plist"
+exit 0

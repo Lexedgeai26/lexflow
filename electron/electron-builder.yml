@@ -1,0 +1,19 @@
+appId: ai.lexedge.app
+productName: LexEdge Flow
+directories:
+  output: dist
+files:
+  - "**/*"
+  - "!dist/${productName}.exe"
+  - "!dist/${productName}.dmg"
+  - "!dist/${productName}.AppImage"
+win:
+  target: nsis
+nsis:
+  deleteAppDataOnUninstall: true
+mac:
+  target: pkg
+pkg:
+  scripts: scripts
+linux:
+  target: AppImage

@@ -3,20 +3,23 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import { db } from './db/database';
-import projectRoutes from './routes/projects';
-import userRoutes from './routes/users';
-import aiRoutes from './routes/ai';
-import skillRoutes from './routes/skills';
+import { db } from './db/database.js';
+import projectRoutes from './routes/projects.js';
+import userRoutes from './routes/users.js';
+import aiRoutes from './routes/ai.js';
+import skillRoutes from './routes/skills.js';
 
 import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// @ts-ignore
+// @ts-ignore
+const _filename = (process.env.IS_CJS === 'true') ? __filename : fileURLToPath(import.meta.url);
+// @ts-ignore
+const _dirname = (process.env.IS_CJS === 'true') ? __dirname : path.dirname(_filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+dotenv.config({ path: path.resolve(_dirname, '../../.env.local') });
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8787;
 
 app.use(cors());
 app.use(express.json());
@@ -41,6 +44,7 @@ db.serialize(() => {
     status TEXT,
     analysis TEXT,
     chat_history TEXT,
+    project_json TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id)
@@ -65,6 +69,25 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+
+  const ensureColumn = (table: string, column: string, definition: string) => {
+    db.all(`PRAGMA table_info(${table})`, [], (err, rows: any[]) => {
+      if (err) {
+        console.error(`Failed to inspect ${table}:`, err.message);
+        return;
+      }
+      const exists = rows.some((row) => row.name === column);
+      if (!exists) {
+        db.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`, (alterErr) => {
+          if (alterErr) {
+            console.error(`Failed to add ${column} to ${table}:`, alterErr.message);
+          }
+        });
+      }
+    });
+  };
+
+  ensureColumn('projects', 'project_json', 'TEXT');
 });
 
 // Routes
@@ -77,6 +100,6 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', database: 'sqlite' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT as number, '127.0.0.1', () => {
+  console.log(`Server running on http://127.0.0.1:${PORT}`);
 });

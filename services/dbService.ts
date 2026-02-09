@@ -1,13 +1,39 @@
 
 import { LegalProject, User, SkillDefinition } from '../types';
 
-const API_Base = '/api';
+const isElectron = typeof window !== 'undefined' && window.location.protocol === 'file:';
+const API_Base = isElectron ? 'http://127.0.0.1:8787/api' : '/api';
 
 export class DBService {
 
   async init(): Promise<void> {
-    // No-op for API
-    return Promise.resolve();
+    if (!isElectron) {
+      // In web mode, API is served from same origin, no need to wait
+      return;
+    }
+
+    // In Electron, wait for backend server to start
+    const healthUrl = 'http://127.0.0.1:8787/health';
+    const maxAttempts = 30; // 30 attempts × 1000ms = 30 seconds max wait
+    const delayMs = 1000;
+
+    console.log('Electron mode detected, waiting for backend server...');
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        const response = await fetch(healthUrl, { cache: 'no-store' });
+        if (response.ok) {
+          console.log(`Backend ready after ${attempt} attempts`);
+          return;
+        }
+      } catch (error) {
+        console.log(`Backend not ready, attempt ${attempt}/${maxAttempts}...`);
+        if (attempt === maxAttempts) {
+          console.error('Backend server failed to start after 30 seconds:', error);
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
   }
 
   async saveProject(project: LegalProject): Promise<void> {
@@ -36,9 +62,29 @@ export class DBService {
     }
   }
 
+  async updateUserContext(userId: string, context: any): Promise<void> {
+    try {
+      const response = await fetch(`${API_Base}/users/update-context`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, context })
+      });
+      if (!response.ok) throw new Error('Failed to update user context');
+    } catch (error) {
+      console.error('API Error updating context:', error);
+      throw error;
+    }
+  }
+
   async saveUser(user: User): Promise<void> {
-    // Used for direct updates if needed, but primary auth is via register/login
-    console.log('Update user not implemented', user);
+    await this.updateUserContext(user.id, {
+      firmName: user.firmName,
+      lawyerName: user.lawyerName,
+      areaOfPractice: user.areaOfPractice,
+      jurisdiction: user.jurisdiction,
+      llmProvider: user.llmProvider,
+      llmApiKey: user.llmApiKey
+    });
   }
 
   async registerUser(userData: any): Promise<User> {
@@ -80,7 +126,6 @@ export class DBService {
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    // Basic local simulation if needed, but ideally we should fetch from API
     return {
       id,
       email: 'demo@lexedgeflow.ai',
@@ -125,7 +170,6 @@ export class DBService {
         body: JSON.stringify(skill)
       });
       if (!response.ok) {
-        // If skill doesn't exist, create it
         const createResponse = await fetch(`${API_Base}/skills`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

@@ -45,7 +45,9 @@ import {
   LogIn,
   Key,
   Eye,
-  EyeOff
+  EyeOff,
+  FolderOpen,
+  FileLock
 } from 'lucide-react';
 
 const AnalysisLoader: React.FC<{ type: string }> = ({ type }) => {
@@ -122,10 +124,10 @@ const AnalysisLoader: React.FC<{ type: string }> = ({ type }) => {
 };
 
 const INITIAL_SKILLS: SkillDefinition[] = [
-  { 
-    id: '1', 
-    name: 'Legal Intake Officer', 
-    description: 'First point of entry. Matter type detection and routing.', 
+  {
+    id: '1',
+    name: 'Legal Intake Officer',
+    description: 'First point of entry. Matter type detection and routing.',
     prompt: `You are a legal intake assistant for an in-house legal team. You serve as the first point of entry for all incoming legal matters.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All intake assessments should be reviewed by qualified legal professionals.
@@ -166,13 +168,13 @@ Escalate immediately when:
 - Time-sensitive matter with less than 48 hours to deadline
 - Document involves executive leadership or board members
 - Potential litigation or regulatory investigation indicators
-- Document value exceeds standard delegation thresholds`, 
-    isActive: true 
+- Document value exceeds standard delegation thresholds`,
+    isActive: true
   },
-  { 
-    id: '2', 
-    name: 'NDA Triage Specialist', 
-    description: 'Rapid NDA risk screening and classification.', 
+  {
+    id: '2',
+    name: 'NDA Triage Specialist',
+    description: 'Rapid NDA risk screening and classification.',
     prompt: `You are an NDA screening assistant for an in-house legal team. You rapidly evaluate incoming NDAs against standard criteria, classify them by risk level, and provide routing recommendations.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All analysis should be reviewed by qualified legal professionals before being relied upon.
@@ -238,13 +240,13 @@ ONE OR MORE of the following present:
 - Broad residuals clause creating effective license
 - IP assignment or license grant hidden in NDA
 - Liquidated damages or penalty provisions
-**Routing**: Full legal review required. Do not sign. Requires negotiation or counterproposal.`, 
-    isActive: true 
+**Routing**: Full legal review required. Do not sign. Requires negotiation or counterproposal.`,
+    isActive: true
   },
-  { 
-    id: '3', 
-    name: 'Contract Review Specialist', 
-    description: 'Clause-by-clause contract analysis and redlines.', 
+  {
+    id: '3',
+    name: 'Contract Review Specialist',
+    description: 'Clause-by-clause contract analysis and redlines.',
     prompt: `You are a contract review assistant for an in-house legal team. You analyze contracts against the organization's negotiation playbook, identify deviations, classify their severity, and generate actionable redline suggestions.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All analysis should be reviewed by qualified legal professionals before being relied upon.
@@ -302,13 +304,13 @@ For each redline:
 - **Proposed redline**: Specific alternative language
 - **Rationale**: 1-2 sentences suitable for external sharing
 - **Priority**: Must-have / Should-have / Nice-to-have
-- **Fallback**: Alternative position if primary rejected`, 
-    isActive: true 
+- **Fallback**: Alternative position if primary rejected`,
+    isActive: true
   },
-  { 
-    id: '4', 
-    name: 'Legal Risk Analyst', 
-    description: 'Quantify legal risk using Severity x Likelihood framework.', 
+  {
+    id: '4',
+    name: 'Legal Risk Analyst',
+    description: 'Quantify legal risk using Severity x Likelihood framework.',
     prompt: `You are a legal risk assessment assistant for an in-house legal team. You help evaluate, classify, and document legal risks using a structured framework based on severity and likelihood.
 
 **Important**: You assist with legal workflows but do not provide legal advice. Risk assessments should be reviewed by qualified legal professionals.
@@ -372,13 +374,13 @@ For each redline:
 ## When to Engage Outside Counsel
 **Mandatory**: Active litigation, government investigation, criminal exposure, securities issues, board-level matters
 **Strongly Recommended**: Novel legal issues, jurisdictional complexity, material financial exposure, specialized expertise needed
-**Consider**: Complex contract disputes, employment matters, data incidents, IP disputes`, 
-    isActive: true 
+**Consider**: Complex contract disputes, employment matters, data incidents, IP disputes`,
+    isActive: true
   },
-  { 
-    id: '5', 
-    name: 'Litigation Readiness Analyst', 
-    description: 'Detect dispute and litigation exposure early.', 
+  {
+    id: '5',
+    name: 'Litigation Readiness Analyst',
+    description: 'Detect dispute and litigation exposure early.',
     prompt: `You are a litigation readiness assistant for an in-house legal team. You detect dispute and litigation exposure early, identify evidence preservation requirements, and recommend proactive measures.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All assessments should be reviewed by qualified legal professionals.
@@ -452,13 +454,13 @@ Escalate immediately when:
 - Government subpoena or inquiry received
 - Whistleblower complaint filed
 - Media attention on dispute
-- Potential criminal liability identified`, 
-    isActive: true 
+- Potential criminal liability identified`,
+    isActive: true
   },
-  { 
-    id: '6', 
-    name: 'Compliance & Privacy Officer', 
-    description: 'Ensure regulatory compliance (GDPR, CCPA, DPA).', 
+  {
+    id: '6',
+    name: 'Compliance & Privacy Officer',
+    description: 'Ensure regulatory compliance (GDPR, CCPA, DPA).',
     prompt: `You are a compliance assistant for an in-house legal team. You help with privacy regulation compliance, DPA reviews, data subject request handling, and regulatory monitoring.
 
 **Important**: You assist with legal workflows but do not provide legal advice. Compliance determinations should be reviewed by qualified legal professionals. Regulatory requirements change frequently; always verify current requirements.
@@ -534,13 +536,13 @@ Escalate when:
 - Breach notification timeline exceeded
 - Data subject request from individual in active litigation
 - Request involves data subject to litigation hold
-- Regulatory inquiry or investigation initiated`, 
-    isActive: true 
+- Regulatory inquiry or investigation initiated`,
+    isActive: true
   },
-  { 
-    id: '7', 
-    name: 'Policy & Playbook Enforcer', 
-    description: 'Enforce internal legal standards.', 
+  {
+    id: '7',
+    name: 'Policy & Playbook Enforcer',
+    description: 'Enforce internal legal standards.',
     prompt: `You are a policy enforcement assistant for an in-house legal team. You compare contracts and legal documents against internal playbooks and standards, score deviations, and ensure consistency with organizational policies.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All assessments should be reviewed by qualified legal professionals.
@@ -620,13 +622,13 @@ Escalate when:
 - Aggregate score indicates non-compliance
 - Multiple clauses score 3
 - Deviation pattern suggests counterparty unwilling to negotiate
-- Contract value exceeds standard delegation authority`, 
-    isActive: true 
+- Contract value exceeds standard delegation authority`,
+    isActive: true
   },
-  { 
-    id: '8', 
-    name: 'Negotiation Strategist', 
-    description: 'Support negotiations with fallback suggestions.', 
+  {
+    id: '8',
+    name: 'Negotiation Strategist',
+    description: 'Support negotiations with fallback suggestions.',
     prompt: `You are a negotiation strategy assistant for an in-house legal team. You prepare negotiation briefs, develop fallback positions, and support concession strategy during contract negotiations.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All negotiation strategies should be reviewed by qualified legal professionals.
@@ -708,13 +710,13 @@ Escalate when:
 - Negotiation reaches impasse on Tier 1 issues
 - Counterparty requests deviation beyond delegation authority
 - New issues arise outside prepared positions
-- Time pressure threatens adequate review`, 
-    isActive: true 
+- Time pressure threatens adequate review`,
+    isActive: true
   },
-  { 
-    id: '9', 
-    name: 'Obligation Manager', 
-    description: 'Post-signing risk prevention and alerts.', 
+  {
+    id: '9',
+    name: 'Obligation Manager',
+    description: 'Post-signing risk prevention and alerts.',
     prompt: `You are an obligation management assistant for an in-house legal team. You extract, track, and monitor contractual obligations and deadlines to prevent post-signing risks.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All obligation tracking should be verified by qualified legal professionals.
@@ -803,13 +805,13 @@ Escalate when:
 - Material obligation cannot be performed
 - Counterparty alleges non-compliance
 - Obligation conflicts with other commitments
-- Resource constraints threaten performance`, 
-    isActive: true 
+- Resource constraints threaten performance`,
+    isActive: true
   },
-  { 
-    id: '10', 
-    name: 'Legal Hold Officer', 
-    description: 'Evidence preservation hold notices.', 
+  {
+    id: '10',
+    name: 'Legal Hold Officer',
+    description: 'Evidence preservation hold notices.',
     prompt: `You are a legal hold assistant for an in-house legal team. You detect legal hold requirements, draft preservation notices, and manage the litigation hold process.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All legal hold decisions should be made by qualified legal professionals.
@@ -901,13 +903,13 @@ Escalate when:
 - Scope unclear or disputed
 - Hold conflicts with regulatory deletion requirements
 - Prior holds exist for related matters
-- Potential criminal liability involved`, 
-    isActive: true 
+- Potential criminal liability involved`,
+    isActive: true
   },
-  { 
-    id: '11', 
-    name: 'Meeting Briefing Coordinator', 
-    description: 'Prepare context and briefs for lawyer meetings.', 
+  {
+    id: '11',
+    name: 'Meeting Briefing Coordinator',
+    description: 'Prepare context and briefs for lawyer meetings.',
     prompt: `You are a meeting preparation assistant for an in-house legal team. You gather context, prepare structured briefings for meetings with legal relevance, and help track action items.
 
 **Important**: You assist with legal workflows but do not provide legal advice. Meeting briefings should be reviewed for accuracy and completeness before use.
@@ -994,13 +996,13 @@ Pull relevant information:
 2. Set calendar reminders for deadlines
 3. Update relevant systems with meeting outcomes
 4. File meeting notes in document repository
-5. Flag urgent items needing immediate attention`, 
-    isActive: true 
+5. Flag urgent items needing immediate attention`,
+    isActive: true
   },
-  { 
-    id: '12', 
-    name: 'Legal Communications Assistant', 
-    description: 'Handle routine legal comms using firm templates.', 
+  {
+    id: '12',
+    name: 'Legal Communications Assistant',
+    description: 'Handle routine legal comms using firm templates.',
     prompt: `You are a response template assistant for an in-house legal team. You help manage, customize, and generate templated responses for common legal inquiries, and identify when a situation requires individualized attention.
 
 **Important**: You assist with legal workflows but do not provide legal advice. Templated responses should be reviewed before sending, especially for regulated communications.
@@ -1072,13 +1074,13 @@ Adjust based on:
 2. Alert: Inform user of escalation trigger
 3. Explain: Which trigger and why it matters
 4. Recommend: Appropriate escalation path
-5. Offer: Draft marked "FOR COUNSEL REVIEW ONLY"`, 
-    isActive: true 
+5. Offer: Draft marked "FOR COUNSEL REVIEW ONLY"`,
+    isActive: true
   },
-  { 
-    id: '13', 
-    name: 'Legal Operations Analyst', 
-    description: 'Efficiency insights and risk trend monitoring.', 
+  {
+    id: '13',
+    name: 'Legal Operations Analyst',
+    description: 'Efficiency insights and risk trend monitoring.',
     prompt: `You are a legal operations analyst for an in-house legal team. You provide efficiency insights, monitor risk trends, and support data-driven decision making for legal department operations.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All operational recommendations should be reviewed by legal leadership.
@@ -1179,13 +1181,13 @@ Escalate when:
 - Risk concentration exceeds tolerance
 - Resource utilization critically imbalanced
 - Trend indicates systemic issue
-- Cost trajectory exceeds budget`, 
-    isActive: true 
+- Cost trajectory exceeds budget`,
+    isActive: true
   },
-  { 
-    id: '14', 
-    name: 'Decision Defense & Audit Officer', 
-    description: 'Audit readiness and decision traceability.', 
+  {
+    id: '14',
+    name: 'Decision Defense & Audit Officer',
+    description: 'Audit readiness and decision traceability.',
     prompt: `You are a decision defense and audit assistant for an in-house legal team. You ensure audit readiness, maintain decision traceability, and provide explainability for all AI-assisted legal decisions.
 
 **Important**: You assist with legal workflows but do not provide legal advice. All audit and compliance matters should be reviewed by qualified legal professionals.
@@ -1282,8 +1284,8 @@ Escalate when:
 - Unexplained inconsistency in decisions
 - Confidence level below acceptable threshold
 - Novel situation outside trained parameters
-- Potential bias or fairness concern identified`, 
-    isActive: true 
+- Potential bias or fairness concern identified`,
+    isActive: true
   }
 ];
 
@@ -1446,11 +1448,7 @@ const App: React.FC = () => {
       localStorage.setItem('lexflow_user_id', user.id);
       localStorage.setItem('lexflow_user_context', JSON.stringify(user));
 
-      if (!user.llmApiKey) {
-        setShowLLMSetup(true);
-      } else {
-        setShowLLMSetup(false);
-      }
+      setShowLLMSetup(false);
 
     } catch (error: any) {
       setAuthError(error.message || 'Authentication failed');
@@ -1476,7 +1474,9 @@ const App: React.FC = () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('/api/ai/upload', {
+        const isElectron = window.location.protocol === 'file:';
+        const uploadUrl = isElectron ? 'http://127.0.0.1:8787/api/ai/upload' : '/api/ai/upload';
+        const response = await fetch(uploadUrl, {
           method: 'POST',
           body: formData
         });
@@ -1526,7 +1526,11 @@ const App: React.FC = () => {
     setCurrentUser(updated);
     localStorage.setItem('lexflow_user_context', JSON.stringify(updated));
     setShowLLMSetup(false);
-    // In a real app, call API to save to DB
+    try {
+      await db.saveUser(updated);
+    } catch (e) {
+      console.error('Failed to sync setting to database:', e);
+    }
   };
 
   const handleCreateProject = async () => {
@@ -1567,7 +1571,7 @@ const App: React.FC = () => {
     try {
       const activeSkills = skills.filter(s => s.isActive);
       const llmConfig = currentUser.llmProvider ? { provider: currentUser.llmProvider, apiKey: currentUser.llmApiKey } : undefined;
-      const analysis = await analyzeDocument(uploadText, newMatterType, activeSkills, context, llmConfig);
+      const analysis = await analyzeDocument(uploadText, newMatterType, activeSkills, context, llmConfig, currentUser?.id);
       const analyzedProj = {
         ...newProj,
         analysis,
@@ -1606,7 +1610,7 @@ const App: React.FC = () => {
         aiText = chunk;
         const modelMsg: ChatMessage = { role: 'model', parts: [{ text: aiText }] };
         setSelectedProject(prev => prev ? { ...prev, chatHistory: [...updatedHistory, modelMsg] } : null);
-      }, llmConfig);
+      }, llmConfig, currentUser?.id);
 
       const finalProject = { ...selectedProject, chatHistory: [...updatedHistory, { role: 'model', parts: [{ text: aiText }] } as ChatMessage] };
       await db.saveProject(finalProject);
@@ -1622,13 +1626,13 @@ const App: React.FC = () => {
       const skillToSave = editingSkill.id === 'new'
         ? { ...editingSkill, id: Math.random().toString(36).substr(2, 9) }
         : editingSkill;
-      
+
       await db.saveSkill(skillToSave);
-      
+
       const newSkills = editingSkill.id === 'new'
         ? [...skills, skillToSave]
         : skills.map(s => s.id === editingSkill.id ? editingSkill : s);
-      
+
       setSkills(newSkills);
       setEditingSkill(null);
     } catch (error) {
@@ -1640,10 +1644,6 @@ const App: React.FC = () => {
   const handleUpdateContext = async (updatedContext: Partial<AppUser>) => {
     if (!currentUser) return;
     const updated = { ...currentUser, ...updatedContext };
-    // We don't have update user route yet, but we can update context locally and pretend
-    // or we can implement updateUser in dbService.
-    console.log('Update context:', updated);
-    // In real app we would call API. For now, we update local state and context state.
     setCurrentUser(updated);
     setContext({
       firmName: updated.firmName,
@@ -1652,6 +1652,11 @@ const App: React.FC = () => {
       jurisdiction: updated.jurisdiction
     });
     localStorage.setItem('lexflow_user_context', JSON.stringify(updated));
+    try {
+      await db.saveUser(updated);
+    } catch (e) {
+      console.error('Failed to sync context update to database:', e);
+    }
   };
 
   const handleDeleteSkill = async (id: string) => {
@@ -1683,9 +1688,11 @@ const App: React.FC = () => {
       <div className="h-screen bg-slate-900 flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl space-y-8 animate-in zoom-in-95">
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">L</div>
-            <h1 className="text-3xl font-bold text-slate-900">LexEdge Flow AI</h1>
-            <p className="text-slate-500 mt-2">Enterprise Legal Operations Portal</p>
+            <div className="inline-block bg-slate-900 p-6 rounded-2xl shadow-xl mb-4 border border-slate-800">
+              <img src="/logo.png" className="w-48 h-auto" alt="LexEdge Logo" />
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">LexEdge Flow</h1>
+            <p className="text-slate-500 mt-2 font-medium">AI Meets Law</p>
           </div>
 
           {authError && (
@@ -1705,7 +1712,7 @@ const App: React.FC = () => {
                     type="email"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                    placeholder="s.jenkins@lexflow.law"
+                    placeholder="s.jenkins@lexflow.ai"
                     value={authEmail}
                     onChange={(e) => setAuthEmail(e.target.value)}
                   />
@@ -1737,7 +1744,7 @@ const App: React.FC = () => {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Work Email</label>
                   <input
                     type="email" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                    placeholder="s.jenkins@lexflow.law" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)}
+                    placeholder="s.jenkins@lexflow.ai" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -1777,7 +1784,7 @@ const App: React.FC = () => {
                     >
                       <option value="openai">OpenAI (GPT-4o)</option>
                       <option value="claude">Anthropic (Claude 3.5)</option>
-                      <option value="gemini">Google (Gemini 1.5)</option>
+                      <option value="gemini">Google (Gemini 3)</option>
                     </select>
                   </div>
                   <div className="space-y-1">
@@ -1790,7 +1797,7 @@ const App: React.FC = () => {
                           type={showApiKey ? "text" : "password"}
                           required
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none pr-10"
-                          placeholder="sk-..."
+                          placeholder="AIza..."
                           value={authLlmApiKey}
                           onChange={(e) => {
                             setAuthLlmApiKey(e.target.value);
@@ -1856,8 +1863,14 @@ const App: React.FC = () => {
               </button>
             </div>
           </form>
-          <div className="pt-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-400">Secure AES-256 Local Encryption • Trusted by Global Firms</p>
+          <div className="pt-4 border-t border-slate-100 text-center space-y-2">
+            <p className="text-xs text-slate-400 font-medium">© 2026 LexEdge. AI Meets Law.</p>
+            <p className="text-[10px] text-slate-400">Developed by <a href="https://www.lexedge.ai" onClick={(e) => {
+              if ((window as any).electronAPI) {
+                e.preventDefault();
+                (window as any).electronAPI.openExternal('https://www.lexedge.ai');
+              }
+            }} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">LexEdge Team</a></p>
           </div>
         </div >
       </div >
@@ -2026,26 +2039,57 @@ const App: React.FC = () => {
                   <h3 className="font-bold flex items-center gap-2"><Bot /> Matter Chat</h3>
                   <span className="text-[10px] text-emerald-400 uppercase font-bold tracking-widest">Database Synced</span>
                 </div>
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-900/40">
                   {selectedProject.chatHistory?.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] p-3 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'}`}>
-                        <p className="text-sm">{msg.parts[0].text}</p>
+                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
+                      <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${msg.role === 'user'
+                        ? 'bg-blue-600 text-white rounded-tr-none'
+                        : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-tl-none'
+                        }`}>
+                        {msg.role === 'user' ? (
+                          <p className="text-sm leading-relaxed">{msg.parts[0].text}</p>
+                        ) : (
+                          <div className="text-sm leading-relaxed space-y-3 whitespace-pre-wrap">
+                            {msg.parts[0].text.split('\n\n').map((para, idx) => {
+                              // Basic formatting for bold and lists
+                              const formatted = para
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/^\* (.*?)$/gm, '• $1');
+
+                              if (para.startsWith('###')) {
+                                return <h3 key={idx} className="text-base font-bold text-white mt-4 first:mt-0">{para.replace('###', '').trim()}</h3>;
+                              }
+                              return <p key={idx} dangerouslySetInnerHTML={{ __html: formatted }} />;
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
-                  {isChatting && <Loader2 className="animate-spin text-blue-500 mx-auto" />}
-                  <div ref={chatEndRef} />
+                  {isChatting && (
+                    <div className="flex justify-start">
+                      <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 rounded-tl-none">
+                        <Loader2 className="animate-spin text-blue-500" size={18} />
+                      </div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} className="h-2" />
                 </div>
-                <div className="p-4 bg-slate-800/50 border-t border-slate-800 flex gap-2">
+                <div className="p-5 bg-slate-900/80 border-t border-slate-800 flex gap-3">
                   <input
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 text-white outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ask about this matter..."
+                    className="flex-1 bg-slate-950 border border-slate-700/50 rounded-xl px-5 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+                    placeholder="Ask a legal question about this matter..."
                     value={chatMessage}
                     onChange={e => setChatMessage(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
                   />
-                  <button onClick={handleSendMessage} className="p-3 bg-blue-600 text-white rounded-xl"><Send size={18} /></button>
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!chatMessage.trim() || isChatting}
+                    className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 disabled:opacity-50 disabled:bg-slate-700 transition-all shadow-lg shadow-blue-900/20"
+                  >
+                    <Send size={20} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -2054,12 +2098,44 @@ const App: React.FC = () => {
       );
     }
 
+    if (projects.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-center animate-in fade-in zoom-in duration-500">
+          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+            <FolderOpen size={40} className="text-slate-300" />
+          </div>
+          <h3 className="text-xl font-bold text-slate-800">No Active Matters Found</h3>
+          <p className="text-slate-500 mt-2 max-w-sm">Start your first legal analysis by creating a new matter and uploading a document.</p>
+          <button onClick={() => { setSelectedProject(null); setActiveTab('new-project'); }} className="mt-8 bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:scale-105 transition-all flex items-center gap-2">
+            <Plus size={20} /> New Matter Intelligence
+          </button>
+        </div>
+      );
+    }
+
     return (
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map(p => (
-          <div key={p.id} onClick={() => setSelectedProject(p)} className="bg-white p-6 rounded-3xl border border-slate-200 hover:shadow-xl cursor-pointer transition-all">
-            <h3 className="font-bold text-slate-800">{p.name}</h3>
-            <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">{p.matterType}</p>
+          <div key={p.id} onClick={() => setSelectedProject(p)} className="bg-white p-6 rounded-3xl border border-slate-200 hover:shadow-xl hover:-translate-y-1 cursor-pointer transition-all flex flex-col justify-between group">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-2 rounded-lg ${p.status === ProjectStatus.ANALYZING ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
+                  <FileText size={20} />
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tighter ${p.status === ProjectStatus.APPROVED ? 'bg-emerald-50 text-emerald-600' :
+                  p.status === ProjectStatus.ANALYZING ? 'bg-blue-50 text-blue-600 animate-pulse' :
+                    'bg-slate-100 text-slate-600'
+                  }`}>
+                  {p.status}
+                </span>
+              </div>
+              <h3 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{p.name}</h3>
+              <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">{p.matterType}</p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
+              <span className="text-[10px] text-slate-400 font-medium">Updated 2m ago</span>
+              <ArrowRight size={14} className="text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+            </div>
           </div>
         ))}
       </div>
@@ -2341,6 +2417,100 @@ const App: React.FC = () => {
     </div>
   );
 
+  const renderTerms = () => (
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+      <div className="flex items-center gap-4">
+        <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+          <ShieldCheck size={32} />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-slate-900 transition-all">Terms & Conditions</h2>
+          <p className="text-slate-500 mt-1 italic font-medium">Last Updated: February 2026</p>
+        </div>
+      </div>
+
+      <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-8 text-slate-700 leading-relaxed overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-bl-full -mr-16 -mt-16 flex items-end justify-start p-8">
+          <Scale size={32} className="text-blue-100" />
+        </div>
+
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-4 py-1">1. Professional Use Only</h3>
+          <p>LexEdge Flow is a sophisticated legal intelligence platform designed for use by qualified legal professionals and organizations. By accessing this platform, you represent that you possess the necessary legal qualifications to interpret and validate AI-generated outputs.</p>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-4 py-1">2. No Legal Advice</h3>
+          <p>The system provides automated document analysis and intelligence. This does NOT constitute legal advice or a lawyer-client relationship. All AI outputs MUST be reviewed, verified, and approved by a qualified legal practitioner before use in any legal matter.</p>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-4 py-1">3. Data Privacy & Processing</h3>
+          <p>LexEdge Flow operates as a secure intermediary. While we provide the interface, document analysis is performed via your configured AI provider. You are responsible for ensuring that your input data complies with your local professional conduct rules and client confidentiality agreements.</p>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-4 py-1">4. Limitation of Liability</h3>
+          <p>LexEdge shall not be liable for any errors, omissions, or inaccuracies in the AI-generated content. You assume all risks associated with the use of the platform's outputs in your legal practice.</p>
+        </section>
+      </div>
+    </div>
+  );
+
+  const renderLicense = () => (
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+      <div className="flex items-center gap-4">
+        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+          <FileLock size={32} />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-slate-900">Software License Agreement</h2>
+          <p className="text-indigo-500 mt-1 font-bold tracking-widest uppercase text-xs">Proprietary Enterprise License v1.0</p>
+        </div>
+      </div>
+
+      <div className="bg-slate-900 p-10 rounded-[2.5rem] border border-slate-800 shadow-2xl space-y-8 text-slate-300">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+          <div className="flex items-center gap-2 text-indigo-400 font-bold uppercase tracking-tighter">
+            <Shield size={18} /> Licensed to: {currentUser?.firmName}
+          </div>
+          <div className="text-xs text-slate-500 font-mono">UID: {currentUser?.id}</div>
+        </div>
+
+        <div className="prose prose-invert prose-slate max-w-none space-y-6">
+          <div className="p-4 bg-indigo-950/30 border border-indigo-800/30 rounded-xl">
+            <p className="text-indigo-300 font-medium italic">"The licensee is granted a non-exclusive, non-transferable, revocable license to use the LexEdge Flow binary for internal legal operations."</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <div className="space-y-4">
+              <h4 className="text-white font-bold flex items-center gap-2"><CheckCircle size={16} className="text-emerald-500" /> Permitted Use</h4>
+              <ul className="text-sm space-y-2 list-disc pl-4 text-slate-400">
+                <li>Internal document analysis</li>
+                <li>Strategy development for clients</li>
+                <li>Automated risk assessment</li>
+                <li>Custom skill deployment</li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-white font-bold flex items-center gap-2"><X size={16} className="text-rose-500" /> Strict Prohibitions</h4>
+              <ul className="text-sm space-y-2 list-disc pl-4 text-slate-400">
+                <li>Reverse engineering of the binary</li>
+                <li>Redistribution of AI logic</li>
+                <li>Sub-licensing to third parties</li>
+                <li>Removal of proprietary notices</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
+            <p className="text-xs text-slate-500">© 2026 LexEdge Flow. All Rights Reserved. LexEdge and the LexEdge Logo are trademarks of LexEdge International.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return renderDashboard();
@@ -2348,6 +2518,8 @@ const App: React.FC = () => {
       case 'new-project': return renderNewProject();
       case 'templates': return renderSkillsManager();
       case 'settings': return renderSettings();
+      case 'terms': return renderTerms();
+      case 'license': return renderLicense();
       default: return renderDashboard();
     }
   };
@@ -2355,11 +2527,11 @@ const App: React.FC = () => {
   return (
     <Layout
       activeTab={activeTab}
+      user={currentUser}
       onTabChange={setActiveTab}
       onNewProject={() => { setSelectedProject(null); setActiveTab('new-project'); }}
     >
       {renderContent()}
-      {showLLMSetup && renderLLMSetupModal()}
       {isAnalyzing && <AnalysisLoader type={newMatterType || "Document"} />}
     </Layout>
   );
