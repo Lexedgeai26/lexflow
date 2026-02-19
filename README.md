@@ -31,6 +31,24 @@ LexEdge Flow comes pre-configured with a suite of specialized AI agents, each de
 - **Meeting Briefing Coordinator:** Synthesizes context and briefs for legal-strategic meetings.
 - **Legal Communications Assistant:** Handles routine inquiries using standardized firm templates.
 
+## 🏗 How it Works: Document Processing
+
+LexEdge Flow uses a modular, multi-agent architecture to provide deep document intelligence. The workflow is designed for maximum accuracy and professional context:
+
+1.  **Ingestion:** Support for PDF, DOCX, and TXT files with high-fidelity text extraction.
+2.  **Context Injection:** Every analysis is grounded in your professional context (Firm Name, Jurisdiction, Area of Practice) defined in Settings.
+3.  **Agent Selection:** Choose specialized agents from the Playbook (e.g., *Contract Review Specialist* for redlines, *Legal Risk Analyst* for scoring).
+4.  **Active Prompt Logic:** The selected agent executes its proprietary logic to identify risks, extract clauses, and provide suggestions.
+5.  **Audit Trail:** Every insight is traceable back to specific clauses in the original document.
+
+## 💬 Interactive AI Chat
+
+Beyond static analysis, LexEdge Flow allows for dynamic, context-aware discussions about your legal matters:
+
+- **Matter-Specific Context:** Chat with agents who have full knowledge of the processed document and its analysis summary.
+- **Deep Q&A:** Ask complex questions like *"What is our fallback position for Section 8?"* or *"Summarize the liability caps across all uploaded docs."*
+- **Agent Roles in Chat:** Engage specific agents (like the *Negotiation Strategist*) to brainstorm counterproposals or defense strategies.
+
 ## 📸 Screenshots
 
 ![Dashboard](assets/screenshot4.png)
@@ -44,6 +62,12 @@ LexEdge Flow comes pre-configured with a suite of specialized AI agents, each de
 
 ![Skills Management](assets/screenshot2.png)
 *The Legal Intelligence Playbook: Configuring specialized AI skills.*
+
+![Document Analysis](assets/screenshot5.png)
+*Deep document analysis powered by specialized AI agents.*
+
+![Interactive Chat](assets/screenshot6.png)
+*Context-aware AI chat for real-time matter discussions and strategy.*
 
 ## 🚀 Quick Start
 
