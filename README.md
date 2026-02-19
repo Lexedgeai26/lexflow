@@ -33,20 +33,17 @@ LexEdge Flow comes pre-configured with a suite of specialized AI agents, each de
 
 ## 📸 Screenshots
 
-![Dashboard](assets/screenshot1.png)
-*Dashboard view showing Project Phoenix and matter status tracking.*
+![Dashboard](assets/screenshot4.png)
+*Professional Dashboard view with matter tracking and status overview.*
 
-![Analysis View](assets/screenshot2.png)
-*Detailed document analysis with risk assessment and skill-based insights.*
+![Risk Center](assets/screenshot1.png)
+*The Risk Center: Detailed legal risk scoring and analysis metrics.*
 
 ![AI Onboarding](assets/screenshot3.png)
-*Secure "Bring Your Own Key" (BYOK) provider setup for LexEdge AI.*
+*Secure "Bring Your Own Key" (BYOK) provider setup and AI configuration.*
 
-![Interactive Chat](assets/screenshot4.png)
-*Professional matter discussions with contextual awareness of legal documents.*
-
-![Skills Management](assets/screenshot5.png)
-*Customizable legal skills engine for tailored document audits.*
+![Skills Management](assets/screenshot2.png)
+*The Legal Intelligence Playbook: Configuring specialized AI skills.*
 
 ## 🚀 Quick Start
 
