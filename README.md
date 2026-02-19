@@ -11,6 +11,26 @@ LexEdge Flow is a high-performance, private-first legal document analysis and in
 - **Secure & Private:** "Bring Your Own Key" (BYOK) architecture. Your API keys and data stay in your control.
 - **Multi-Provider Support:** Seamlessly switch between OpenAI (GPT-4o), Anthropic (Claude 3.5), and Google (Gemini 1.5).
 
+## 🧠 Legal Intelligence Playbook
+
+LexEdge Flow comes pre-configured with a suite of specialized AI agents, each designed for specific legal workflows. These agents use sophisticated "Active Prompt Logic" to perform deep audits and provide actionable insights.
+
+### Core Intelligence Agents
+
+- **Legal Intake Officer:** serves as the first point of entry, providing classification, metadata extraction, and routing recommendations.
+- **NDA Triage Specialist:** Performs rapid screening and classification of NDAs based on standard risk criteria.
+- **Contract Review Specialist:** Executes clause-by-clause analysis against negotiation playbooks with redline suggestions.
+- **Legal Risk Analyst:** Quantifies exposure using a Severity x Likelihood framework (1-25 scoring).
+- **Compliance & Privacy Officer:** Ensures alignment with GDPR, CCPA, and DPA requirements.
+- **Negotiation Strategist:** Supports drafting fallback positions and concession strategies.
+- **Obligation Manager:** Tracks post-signing milestones, renewals, and performance commitments.
+- **Litigation Readiness Analyst:** Detects early warning signals of dispute and litigation exposure.
+- **Legal Hold Officer:** Manages the identification and notification process for evidence preservation.
+- **Policy & Playbook Enforcer:** Scores contract deviations against internal organizational standards.
+- **Decision Defense & Audit Officer:** Provides traceability and explainability for all AI-assisted legal decisions.
+- **Meeting Briefing Coordinator:** Synthesizes context and briefs for legal-strategic meetings.
+- **Legal Communications Assistant:** Handles routine inquiries using standardized firm templates.
+
 ## 📸 Screenshots
 
 ![Dashboard](assets/screenshot1.png)
