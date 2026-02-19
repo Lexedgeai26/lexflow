@@ -1,38 +1,51 @@
-# Logs
-logs
+# Backend & Database
+backend/node_modules
+backend/lexflow.db
+backend/lexflow.db-journal
+*.db
+*.sqlite
 *.log
+backend/package-lock.json
+
+# Build & Dist
+dist/
+dist_electron/
+build/
+release/
+out/
+.vercel
+.next
+.serverless
+
+# Electron / Legacy (excluding from repo)
+electron/
+logos/
+scripts/
+server/
+docs/
+
+# Node & General
+node_modules/
+package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Environment & Private
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Electron distribution files
-dist_electron/
-electron/backend/lexflow-server
-electron/backend/lexflow-server.exe
-electron/backend/index.js
-electron/backend/node_sqlite3.node
-electron/backend/node_modules/
-
-# SQLite database
-*.sqlite
-
-# Tauri build artifacts
-src-tauri/target/
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db

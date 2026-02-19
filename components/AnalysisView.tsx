@@ -52,7 +52,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis }) => {
             <div className="flex-1 h-2 bg-slate-100 rounded-full mb-2 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ${analysis.overallRisk === RiskLevel.HIGH ? 'bg-rose-500' :
-                    analysis.overallRisk === RiskLevel.MEDIUM ? 'bg-amber-500' : 'bg-emerald-500'
+                  analysis.overallRisk === RiskLevel.MEDIUM ? 'bg-amber-500' : 'bg-emerald-500'
                   }`}
                 style={{ width: `${analysis.riskScore}%` }}
               />
@@ -97,19 +97,19 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis }) => {
       <div className="space-y-6">
         <h3 className="text-lg font-bold text-slate-800 px-1">Applied Legal Skills</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {analysis.skillsApplied.map((skill, idx) => (
+          {(analysis.skillsApplied || []).map((skill, idx) => (
             <div key={idx} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col">
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
                 <h4 className="font-bold text-slate-800 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                  {skill.title}
+                  {skill?.title || 'Unlabeled Skill'}
                 </h4>
-                <RiskBadge level={skill.riskLevel} />
+                <RiskBadge level={skill?.riskLevel || RiskLevel.LOW} />
               </div>
               <div className="p-6 space-y-4 flex-1">
-                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{skill.content}</p>
+                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{skill?.content || 'No analysis content provided.'}</p>
 
-                {skill.clauses && skill.clauses.length > 0 && (
+                {skill?.clauses && skill.clauses.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Key Clauses Flagged</p>
                     <div className="space-y-2">
@@ -122,7 +122,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis }) => {
                   </div>
                 )}
 
-                {skill.suggestions && skill.suggestions.length > 0 && (
+                {skill?.suggestions && skill.suggestions.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">Recommended Actions</p>
                     <ul className="space-y-1.5">

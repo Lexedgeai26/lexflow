@@ -1,39 +1,13 @@
 
 import { LegalProject, User, SkillDefinition } from '../types';
 
-const isElectron = typeof window !== 'undefined' && window.location.protocol === 'file:';
-const API_Base = isElectron ? 'http://127.0.0.1:8787/api' : '/api';
+const API_Base = '/api';
 
 export class DBService {
 
   async init(): Promise<void> {
-    if (!isElectron) {
-      // In web mode, API is served from same origin, no need to wait
-      return;
-    }
-
-    // In Electron, wait for backend server to start
-    const healthUrl = 'http://127.0.0.1:8787/health';
-    const maxAttempts = 30; // 30 attempts × 1000ms = 30 seconds max wait
-    const delayMs = 1000;
-
-    console.log('Electron mode detected, waiting for backend server...');
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-      try {
-        const response = await fetch(healthUrl, { cache: 'no-store' });
-        if (response.ok) {
-          console.log(`Backend ready after ${attempt} attempts`);
-          return;
-        }
-      } catch (error) {
-        console.log(`Backend not ready, attempt ${attempt}/${maxAttempts}...`);
-        if (attempt === maxAttempts) {
-          console.error('Backend server failed to start after 30 seconds:', error);
-        }
-      }
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
+    // Web mode: API is served via proxy, no initialization needed
+    return Promise.resolve();
   }
 
   async saveProject(project: LegalProject): Promise<void> {
@@ -113,11 +87,19 @@ export class DBService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Login failed');
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        if (!response.ok) throw new Error(`Server Error (${response.status})`);
+        throw new Error('Invalid response from server');
       }
-      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
       return data.user;
     } catch (error) {
       console.error('Login Error:', error);

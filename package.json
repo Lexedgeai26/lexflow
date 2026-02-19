@@ -1,7 +1,9 @@
 {
   "name": "lexedge-flow-ai-legal-ops",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "AI-powered legal operations platform",
+  "author": "LexEdge",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "sqlite3": "^5.1.7",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

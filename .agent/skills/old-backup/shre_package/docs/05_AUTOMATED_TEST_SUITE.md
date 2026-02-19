@@ -1,1 +1,0 @@
-1. Authentication: Test user login with valid and invalid credentials. 2. Authorization: Test access control based on user roles. 3. CRUD Operations: Test create, read, update, and delete actions for user profiles and documents. 4. Security: Test JWT expiration and refresh. 5. UI: Test the rendering of UI components and responsiveness.

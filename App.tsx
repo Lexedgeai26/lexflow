@@ -1302,9 +1302,9 @@ const App: React.FC = () => {
   });
   const [selectedProject, setSelectedProject] = React.useState<LegalProject | null>(null);
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
-  const [isDbLoaded, setIsDbLoaded] = React.useState(false);
+  const [isDbLoaded, setIsDbLoaded] = React.useState(true);
 
-  // Auth Form State
+
   const [authMode, setAuthMode] = React.useState<'login' | 'register'>('login');
   const [authEmail, setAuthEmail] = React.useState('');
   const [authPassword, setAuthPassword] = React.useState('');
@@ -1347,51 +1347,58 @@ const App: React.FC = () => {
   // Load from DB on mount
   React.useEffect(() => {
     const init = async () => {
-      await db.init();
-      const loadedProjects = await db.getProjects();
-      const loadedSkills = await db.getSkills();
-      const savedUserStr = localStorage.getItem('lexflow_user_context');
+      try {
+        await db.init();
+        const loadedProjects = await db.getProjects();
+        const loadedSkills = await db.getSkills();
+        const savedUserStr = localStorage.getItem('lexflow_user_context');
 
-      if (loadedProjects.length > 0) setProjects(loadedProjects);
+        if (loadedProjects.length > 0) setProjects(loadedProjects);
 
-      // Always seed with INITIAL_SKILLS if database is empty or has fewer skills
-      // This ensures the full prompts from INITIAL_SKILLS are used
-      if (loadedSkills.length === 0) {
-        console.log('No skills in database, seeding with INITIAL_SKILLS');
-        await db.saveSkills(INITIAL_SKILLS);
-        setSkills(INITIAL_SKILLS);
-      } else if (loadedSkills.length < INITIAL_SKILLS.length) {
-        // Merge: keep existing skills, add new ones from INITIAL_SKILLS
-        console.log('Fewer skills in database, merging with INITIAL_SKILLS');
-        const existingIds = new Set(loadedSkills.map(s => s.id));
-        const newSkills = INITIAL_SKILLS.filter(s => !existingIds.has(s.id));
-        const merged = [...loadedSkills, ...newSkills];
-        await db.saveSkills(merged);
-        setSkills(merged);
-      } else {
-        setSkills(loadedSkills);
-      }
-
-      if (savedUserStr) {
-        try {
-          const user = JSON.parse(savedUserStr);
-          setCurrentUser(user);
-          setContext({
-            firmName: user.firmName,
-            lawyerName: user.lawyerName,
-            areaOfPractice: user.areaOfPractice,
-            jurisdiction: user.jurisdiction
-          });
-
-          if (!user.llmApiKey) {
-            setShowLLMSetup(true);
-          }
-        } catch (e) {
-          console.error("Failed to restore user session", e);
-          localStorage.removeItem('lexflow_user_context');
+        // Always seed with INITIAL_SKILLS if database is empty or has fewer skills
+        // This ensures the full prompts from INITIAL_SKILLS are used
+        if (loadedSkills.length === 0) {
+          console.log('No skills in database, seeding with INITIAL_SKILLS');
+          await db.saveSkills(INITIAL_SKILLS);
+          setSkills(INITIAL_SKILLS);
+        } else if (loadedSkills.length < INITIAL_SKILLS.length) {
+          // Merge: keep existing skills, add new ones from INITIAL_SKILLS
+          console.log('Fewer skills in database, merging with INITIAL_SKILLS');
+          const existingIds = new Set(loadedSkills.map(s => s.id));
+          const newSkills = INITIAL_SKILLS.filter(s => !existingIds.has(s.id));
+          const merged = [...loadedSkills, ...newSkills];
+          await db.saveSkills(merged);
+          setSkills(merged);
+        } else {
+          setSkills(loadedSkills);
         }
+
+        if (savedUserStr) {
+          try {
+            const user = JSON.parse(savedUserStr);
+            setCurrentUser(user);
+            setContext({
+              firmName: user.firmName,
+              lawyerName: user.lawyerName,
+              areaOfPractice: user.areaOfPractice,
+              jurisdiction: user.jurisdiction
+            });
+
+            if (!user.llmApiKey) {
+              setShowLLMSetup(true);
+            }
+          } catch (e) {
+            console.error("Failed to restore user session", e);
+            localStorage.removeItem('lexflow_user_context');
+          }
+        }
+      } catch (err) {
+        console.error("Init error (non-fatal, continuing):", err);
+        // Use default skills if backend is unavailable
+        setSkills(INITIAL_SKILLS);
+      } finally {
+        setIsDbLoaded(true);
       }
-      setIsDbLoaded(true);
     };
     init();
   }, []);
@@ -1685,8 +1692,8 @@ const App: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <div className="h-screen bg-slate-900 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl space-y-8 animate-in zoom-in-95">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 py-12">
+        <div className={`w-full ${authMode === 'register' ? 'max-w-4xl' : 'max-w-md'} bg-white rounded-3xl p-8 md:p-12 shadow-2xl space-y-8 animate-in zoom-in-95`}>
           <div className="text-center">
             <div className="inline-block bg-slate-900 p-6 rounded-2xl shadow-xl mb-4 border border-slate-800">
               <img src="/logo.png" className="w-48 h-auto" alt="LexEdge Logo" />
@@ -1701,11 +1708,11 @@ const App: React.FC = () => {
             </div>
           )}
 
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-6">
 
             {/* Login Fields */}
             {authMode === 'login' && (
-              <>
+              <div className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Work Email</label>
                   <input
@@ -1727,53 +1734,68 @@ const App: React.FC = () => {
                     onChange={(e) => setAuthPassword(e.target.value)}
                   />
                 </div>
-              </>
+              </div>
             )}
 
-            {/* Registration Fields */}
+            {/* Registration Fields - Two Column Grid */}
             {authMode === 'register' && (
-              <>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                  <input
-                    type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                    placeholder="Sarah Jenkins" value={authName} onChange={(e) => setAuthName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Work Email</label>
-                  <input
-                    type="email" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                    placeholder="s.jenkins@lexflow.ai" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {/* Column 1: Profile & Security */}
+                <div className="space-y-5">
+                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                    <User size={16} className="text-blue-600" /> Profile & Security
+                  </h3>
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Password</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
                     <input
-                      type="password" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                      value={authPassword} onChange={(e) => setAuthPassword(e.target.value)}
+                      type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                      placeholder="Sarah Jenkins" value={authName} onChange={(e) => setAuthName(e.target.value)}
                     />
                   </div>
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Confirm Password</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Work Email</label>
                     <input
-                      type="password" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                      value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                      type="email" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                      placeholder="s.jenkins@lexflow.ai" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)}
                     />
                   </div>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Firm Name</label>
-                  <input
-                    type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                    placeholder="LexEdge Flow Partners" value={firmName} onChange={(e) => setFirmName(e.target.value)}
-                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Password</label>
+                      <input
+                        type="password" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                        value={authPassword} onChange={(e) => setAuthPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Confirm</label>
+                      <input
+                        type="password" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                        value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Firm Name</label>
+                    <input
+                      type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                      placeholder="LexEdge Flow Partners" value={firmName} onChange={(e) => setFirmName(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 pt-2 border-t border-slate-100">
+                {/* Column 2: AI Config & Professional */}
+                <div className="space-y-5">
+                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                    <Cpu size={16} className="text-blue-600" /> AI Engine & Practice
+                  </h3>
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Select AI Engine (LLM)</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Select AI Engine</label>
                     <select
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none appearance-none bg-white"
                       value={authLlmProvider}
@@ -1784,20 +1806,21 @@ const App: React.FC = () => {
                     >
                       <option value="openai">OpenAI (GPT-4o)</option>
                       <option value="claude">Anthropic (Claude 3.5)</option>
-                      <option value="gemini">Google (Gemini 3)</option>
+                      <option value="gemini">Google (Gemini Pro)</option>
                     </select>
                   </div>
+
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      Personal AI API Key <Key size={12} className="text-blue-500" />
+                      AI API Key <Key size={12} className="text-blue-500" />
                     </label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
                         <input
                           type={showApiKey ? "text" : "password"}
                           required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none pr-10"
-                          placeholder="AIza..."
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none pr-10 text-sm"
+                          placeholder="API Key..."
                           value={authLlmApiKey}
                           onChange={(e) => {
                             setAuthLlmApiKey(e.target.value);
@@ -1808,7 +1831,7 @@ const App: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setShowApiKey(!showApiKey)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                         >
                           {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
@@ -1827,53 +1850,55 @@ const App: React.FC = () => {
                         {validationMessage}
                       </p>
                     )}
-                    <p className="text-[10px] text-slate-400 italic">Keys are stored locally only. We never see your keys.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Practice Area</label>
+                      <input
+                        type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                        value={areaOfPractice} onChange={(e) => setAreaOfPractice(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Jurisdiction</label>
+                      <input
+                        type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
+                        value={jurisdiction} onChange={(e) => setJurisdiction(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <p className="text-[10px] text-slate-400 italic leading-tight">
+                      Keys are stored locally in your browser. LexEdge never sees or stores your API configuration.
+                    </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Area</label>
-                    <input
-                      type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                      value={areaOfPractice} onChange={(e) => setAreaOfPractice(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Jurisdiction</label>
-                    <input
-                      type="text" required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none"
-                      value={jurisdiction} onChange={(e) => setJurisdiction(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </>
+              </div>
             )}
 
-            <button
-              disabled={authMode === 'register' && !llmValidated}
-              className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl disabled:opacity-50"
-            >
-              <LogIn size={20} />
-              {authMode === 'login' ? 'Access Portal' : 'Create Account'}
-            </button>
+            <div className="pt-4 border-t border-slate-100 flex flex-col items-center gap-4">
+              <button
+                disabled={authMode === 'register' && !llmValidated}
+                className={`${authMode === 'register' ? 'w-1/2' : 'w-full'} bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl disabled:opacity-50`}
+              >
+                <LogIn size={20} />
+                {authMode === 'login' ? 'Access Portal' : 'Create My Account'}
+              </button>
 
-            <div className="text-center">
               <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-sm text-blue-600 font-bold hover:underline">
-                {authMode === 'login' ? "Don't have an account? Register" : "Already have an account? Login"}
+                {authMode === 'login' ? "New Counsel? Register" : "Already have an account? Login"}
               </button>
             </div>
           </form>
-          <div className="pt-4 border-t border-slate-100 text-center space-y-2">
-            <p className="text-xs text-slate-400 font-medium">© 2026 LexEdge. AI Meets Law.</p>
-            <p className="text-[10px] text-slate-400">Developed by <a href="https://www.lexedge.ai" onClick={(e) => {
-              if ((window as any).electronAPI) {
-                e.preventDefault();
-                (window as any).electronAPI.openExternal('https://www.lexedge.ai');
-              }
-            }} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">LexEdge Team</a></p>
+
+          <div className="pt-8 text-center space-y-2 opacity-50">
+            <p className="text-xs text-slate-400 font-medium">© 2026 LexEdge Flow. Secure Legal Workspace.</p>
+            <p className="text-[10px] text-slate-400">Developed by <a href="https://www.lexedge.ai" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">LexEdge Team</a></p>
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
     );
   }
 
@@ -2217,22 +2242,22 @@ const App: React.FC = () => {
   );
 
   const renderLLMSetupModal = () => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" />
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" />
       <div className="relative w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8 space-y-6 animate-in zoom-in-95 duration-300">
         <div className="flex items-center gap-4 border-b border-slate-800 pb-6">
           <div className="p-4 bg-blue-600 rounded-2xl shadow-lg shadow-blue-900/20">
             <Key className="text-white" size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">AI Engine Required</h2>
-            <p className="text-slate-400 text-sm">You must configure an AI provider to start using LexEdge Flow.</p>
+            <h2 className="text-2xl font-bold text-white uppercase tracking-tight">AI Engine <span className="text-blue-500">Required</span></h2>
+            <p className="text-slate-400 text-sm">LexEdge Flow requires an AI provider to perform legal intelligence.</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select AI Provider</label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select AI Engine</label>
             <select
               className={inputClass}
               value={authLlmProvider}
@@ -2279,20 +2304,22 @@ const App: React.FC = () => {
               </button>
             </div>
             {validationMessage && (
-              <p className={`text-[10px] font-bold mt-1 ${llmValidated ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`text-[10px] font-bold mt-1 ${llmValidated ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {validationMessage}
               </p>
             )}
-            <p className="text-[10px] text-slate-500">LexEdge Flow is a bring-your-own-key platform. Keys are stored safely in your browser.</p>
+            <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
+              <p className="text-[10px] text-blue-400 leading-relaxed font-medium">LexEdge Flow is a "Bring Your Own Key" platform. We never store your keys on our servers. They reside in your local browser's secure memory only.</p>
+            </div>
           </div>
         </div>
 
         <button
           onClick={() => handleSaveLLMConfig(authLlmProvider, authLlmApiKey)}
           disabled={!llmValidated}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/20 disabled:opacity-50"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-xl shadow-blue-900/20 disabled:opacity-50"
         >
-          {llmValidated ? 'Initialize AI Engine' : 'Validate Key to Continue'}
+          {llmValidated ? 'Initialize Intelligence Engine' : 'Validate Provider Key to Continue'}
         </button>
       </div>
     </div>
@@ -2533,6 +2560,7 @@ const App: React.FC = () => {
     >
       {renderContent()}
       {isAnalyzing && <AnalysisLoader type={newMatterType || "Document"} />}
+      {(showLLMSetup || (currentUser && (!currentUser.llmApiKey || currentUser.llmApiKey.trim() === ""))) && renderLLMSetupModal()}
     </Layout>
   );
 };

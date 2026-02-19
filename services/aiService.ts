@@ -1,11 +1,7 @@
 
 import { LegalProject, LegalContext, SkillDefinition, AnalysisResult, ChatMessage } from '../types';
 
-const isTauri =
-    typeof window !== 'undefined' &&
-    ((window as any).__TAURI_INTERNALS__ || (window as any).__TAURI__);
-const isElectron = typeof window !== 'undefined' && window.location.protocol === 'file:';
-const API_BASE = (isTauri || isElectron) ? 'http://127.0.0.1:8787/api/ai' : '/api/ai';
+const API_BASE = '/api/ai';
 
 export const analyzeDocument = async (
     text: string,
@@ -23,8 +19,13 @@ export const analyzeDocument = async (
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Analysis failed');
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                throw new Error(`Server Error (${response.status})`);
+            }
+            throw new Error(errorData.error || 'Analysis failed');
         }
 
         return await response.json();

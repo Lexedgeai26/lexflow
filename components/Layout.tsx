@@ -115,8 +115,21 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, user, onTabChange,
         </header>
 
         <div className="flex-1 overflow-auto p-8">
-          <div className="max-w-7xl mx-auto h-full">
-            {children}
+          <div className="max-w-7xl mx-auto min-h-full flex flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
+
+            <footer className="mt-12 pt-8 border-t border-slate-200 text-center md:text-left">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs">
+                <p>
+                  © 2026 <span className="font-bold text-slate-800">LexEdge Flow</span>. All rights reserved.
+                </p>
+                <p className="flex items-center gap-1">
+                  Developed by <a href="https://www.lexedge.ai/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-bold transition-colors underline decoration-blue-200 underline-offset-4">LexEdge Lab</a>
+                </p>
+              </div>
+            </footer>
           </div>
         </div>
       </main>

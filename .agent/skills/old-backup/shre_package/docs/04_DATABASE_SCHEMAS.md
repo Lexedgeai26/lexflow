@@ -1,1 +1,0 @@
-User: { id: UUID, username: VARCHAR(255), password: VARCHAR(255), email: VARCHAR(255), role: ENUM('admin', 'user'), createdAt: TIMESTAMP, updatedAt: TIMESTAMP }, Document: { id: UUID, userId: UUID, name: VARCHAR(255), content: BYTEA, createdAt: TIMESTAMP, updatedAt: TIMESTAMP }

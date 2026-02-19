@@ -5,15 +5,20 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
+    base: './',
     server: {
       port: 3000,
       host: '0.0.0.0',
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: 'http://127.0.0.1:8787',
           changeOrigin: true,
-          proxyTimeout: 300000, // 5 minutes
+          proxyTimeout: 300000,
           timeout: 300000,
+        },
+        '/health': {
+          target: 'http://127.0.0.1:8787',
+          changeOrigin: true,
         }
       }
     },
